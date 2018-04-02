@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:viewportHeight="24.0"
+    android:viewportWidth="24.0"
+    android:width="48dp" >
+
+    <group android:name="showTranslation" >
+        <path
+            android:name="show"
+            android:fillColor="@color/buttonColors"
+            android:pathData=
+                "M12, 4
+                 L6, 10
+                 7.41, 11.41
+                 12, 7
+                 16.59, 11.41
+                 18, 10z"/>
+
+    </group>
+
+</vector>

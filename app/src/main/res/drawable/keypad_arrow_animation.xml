@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:drawable="@drawable/show_keyboard_icon">
+
+    <target
+        android:animation="@animator/keypad_arrow_animator"
+        android:name="show" />
+
+</animated-vector>

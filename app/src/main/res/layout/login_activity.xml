@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginConstraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/LoginTheme"
+    tools:context=".activities.login.LoginActivity">
+
+    <EditText
+        android:id="@+id/inputField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="70dp"
+        android:cursorVisible="false"
+        android:inputType="numberPassword"
+        android:textAlignment="center"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toTopOf="@+id/hideKeypadButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.522" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/circle"
+        app:layout_constraintBottom_toTopOf="@+id/hideKeypadButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/button_submit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@mipmap/ic_send_black_48dp"
+            android:backgroundTint="?attr/colorBackgroundFloating"
+            android:scaleType="centerCrop"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:translationX="3dp"
+            app:layout_constraintBottom_toTopOf="@+id/gridLayout"
+            app:layout_constraintStart_toEndOf="@+id/inputField"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/hideKeypadButton"
+        android:layout_width="150dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="280dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:animateLayoutChanges="true"
+        android:background="?attr/colorBackgroundFloating"
+        android:visibility="visible"
+        app:columnCount="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hideKeypadButton"
+        app:rowCount="4"
+        app:useDefaultMargins="false">
+
+        <Button
+            android:id="@+id/button_1"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_button1"
+            android:onClick="numberClick"
+            android:shadowRadius="0"
+            android:tag="1"
+            android:text="@string/button_1"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_2"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_margin="1dp"
+            android:background="@drawable/gradient_row1"
+            android:onClick="numberClick"
+            android:tag="2"
+            android:text="@string/button_2"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_3"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginBottom="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_button3"
+            android:onClick="numberClick"
+            android:tag="3"
+            android:text="@string/button_3"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_4"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_row2"
+            android:onClick="numberClick"
+            android:tag="4"
+            android:text="@string/button_4"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="1"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_5"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_margin="1dp"
+            android:background="@drawable/gradient_row2"
+            android:onClick="numberClick"
+            android:tag="5"
+            android:text="@string/button_5"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="1"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_6"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginBottom="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_row2"
+            android:onClick="numberClick"
+            android:tag="6"
+            android:text="@string/button_6"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_row="1"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_7"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_row3"
+            android:onClick="numberClick"
+            android:tag="7"
+            android:text="@string/button_7"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="2"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_8"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_margin="1dp"
+            android:background="@drawable/gradient_row3"
+            android:onClick="numberClick"
+            android:tag="8"
+            android:text="@string/button_8"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="2"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/button_9"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_marginBottom="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/gradient_row3"
+            android:onClick="numberClick"
+            android:tag="9"
+            android:text="@string/button_9"
+            android:textColor="@android:color/white"
+            android:textSize="26sp"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_row="2"
+            app:layout_rowWeight="1" />
+
+        <FrameLayout
+            android:layout_width="39dp"
+            android:layout_height="43dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@color/buttonColors"
+            app:layout_column="2"
+            app:layout_columnWeight="1"
+            app:layout_row="3"
+            app:layout_rowWeight="1">
+
+            <ImageView
+                android:id="@+id/button_delete"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
+                android:background="@mipmap/ic_backspace_black_48dp"
+                android:backgroundTint="@android:color/white"
+                android:scaleX="0.3"
+                android:scaleY="0.3" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="39dp"
+            android:layout_height="43dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="3"
+            app:layout_rowWeight="1">
+
+            <Button
+                android:id="@+id/button_0"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_row4"
+                android:onClick="numberClick"
+                android:tag="0"
+                android:text="@string/button_0"
+                android:textColor="@android:color/white"
+                android:textSize="26sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fingerprint_frame"
+            android:layout_width="39dp"
+            android:layout_height="43dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+            android:background="@color/buttonColors"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="3"
+            app:layout_rowWeight="1"
+            tools:layout_editor_absoluteX="2dp"
+            tools:layout_editor_absoluteY="2dp">
+
+            <ImageView
+                android:id="@+id/button_fingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/ic_fingerprint_black_48dp"
+                android:backgroundTint="@android:color/white"
+                android:scaleX="0.45"
+                android:scaleY="0.55" />
+        </FrameLayout>
+
+    </android.support.v7.widget.GridLayout>
+
+</android.support.constraint.ConstraintLayout>

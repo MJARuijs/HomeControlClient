@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:viewportHeight="24.0"
+    android:viewportWidth="24.0"
+    android:width="48dp" >
+
+    <group android:name="hideTranslation">
+        <path
+            android:name="hide"
+            android:fillColor="@color/buttonColors"
+            android:pathData=
+                "M12, 13
+                 L7.41, 8.59
+                 6, 10
+                 12, 16
+                 18, 10
+                 16.59, 8.59z" />
+
+    </group>
+
+</vector>

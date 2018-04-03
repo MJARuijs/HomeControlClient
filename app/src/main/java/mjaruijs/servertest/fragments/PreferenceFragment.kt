@@ -8,9 +8,9 @@ import android.widget.Toast
 import mjaruijs.servertest.R
 import mjaruijs.servertest.Settings
 import mjaruijs.servertest.activities.login.LoginActivity
-import mjaruijs.servertest.server.CommandConnection
-import mjaruijs.servertest.server.CommandResult
-import mjaruijs.servertest.server.CommandResult.*
+import mjaruijs.servertest.server.command.CommandConnection
+import mjaruijs.servertest.server.command.CommandResult
+import mjaruijs.servertest.server.command.CommandResult.*
 import mjaruijs.servertest.server.ConfigConnection
 import mjaruijs.servertest.server.ConnectionResponse
 
@@ -19,29 +19,30 @@ class PreferenceFragment : android.preference.PreferenceFragment() {
     private val preferenceChangeListener = OnPreferenceChangeListener { preference, newState ->
         (findPreference(preference.key) as SwitchPreference).isEnabled = false
          CommandConnection(object : ConnectionResponse() {
-            override fun commandResult(result: CommandResult) {
-                super.commandResult(result)
-                when (result) {
-                    SUCCESS -> {
-                        settings!!.setBoolean(preference.key, newState as Boolean)
-                        (findPreference(preference.key) as SwitchPreference).isEnabled = true
-                        (findPreference(preference.key) as SwitchPreference).isChecked = newState
-                    }
-                    SESSION_EXPIRED -> {
-                        Toast.makeText(context, "Session expired!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(context, LoginActivity::class.java))
-                    }
-                    PC_STILL_ON -> {
-                        Toast.makeText(context, "PC is already running!", Toast.LENGTH_SHORT).show()
-                        settings!!.setBoolean(preference.key, true)
-                        (findPreference(preference.key) as SwitchPreference).isChecked = true
-                        (findPreference(preference.key) as SwitchPreference).isEnabled = true
-                    }
-                    else -> {}
-                }
+             override fun commandResult(result: CommandResult) {
+                 super.commandResult(result)
+                 when (result) {
+                     SUCCESS -> {
+                         settings!!.setBoolean(preference.key, newState as Boolean)
+                         (findPreference(preference.key) as SwitchPreference).isEnabled = true
+                         (findPreference(preference.key) as SwitchPreference).isChecked = newState
+                     }
+                     SESSION_EXPIRED -> {
+                         Toast.makeText(context, "Session expired!", Toast.LENGTH_SHORT).show()
+                         startActivity(Intent(context, LoginActivity::class.java))
+                     }
+                     PC_STILL_ON -> {
+                         Toast.makeText(context, "PC is already running!", Toast.LENGTH_SHORT).show()
+                         settings!!.setBoolean(preference.key, true)
+                         (findPreference(preference.key) as SwitchPreference).isChecked = true
+                         (findPreference(preference.key) as SwitchPreference).isEnabled = true
+                     }
+                     else -> {
+                     }
+                 }
 
-            }
-        }).execute(preference.key)
+             }
+         }).execute(preference.key)
 
         true
     }

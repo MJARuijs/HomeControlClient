@@ -13,28 +13,25 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import android.support.v7.app.AppCompatActivity
-import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.login_activity.*
 import mjaruijs.servertest.R
 import mjaruijs.servertest.activities.MainActivity
-import mjaruijs.servertest.server.AccessConnection
 import mjaruijs.servertest.server.ConnectionResponse
-import mjaruijs.servertest.server.ConnectionState
-import mjaruijs.servertest.server.ConnectionState.*
-import java.security.KeyStore
-import java.security.KeyStoreException
-import java.security.NoSuchAlgorithmException
-import javax.crypto.*
+import mjaruijs.servertest.server.authentication.AccessConnection
+import mjaruijs.servertest.server.authentication.ConnectionState
+import mjaruijs.servertest.server.authentication.ConnectionState.*
+import java.security.*
+import java.security.spec.ECGenParameterSpec
 
 class LoginActivity : AppCompatActivity() {
 
     private var keyGuardManager: KeyguardManager? = null
     private var keyStore: KeyStore? = null
-    private var keyGenerator: KeyGenerator? = null
+    private var keyGenerator: KeyPairGenerator? = null
+    private val signature = Signature.getInstance("SHA256withECDSA")
 
     private var keypadArrowDown: AnimatedVectorDrawable? = null
     private var keypadArrowUp: AnimatedVectorDrawable? = null
@@ -60,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         try {
-            keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+            keyGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore")
         } catch (e: NoSuchAlgorithmException) {
             throw RuntimeException("Failed to get an instance of KeyGenerator", e)
         }
@@ -72,34 +69,24 @@ class LoginActivity : AppCompatActivity() {
             button_fingerprint.isEnabled = false
             return
         }
-
         createKey()
     }
 
     private fun setOnClickListeners() {
-        val defaultCipher: Cipher
-        try {
-            defaultCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
-                    + KeyProperties.BLOCK_MODE_CBC + "/"
-                    + KeyProperties.ENCRYPTION_PADDING_PKCS7)
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException("Failed to get an instance of Cipher", e)
-        } catch (e: NoSuchPaddingException) {
-            throw RuntimeException("Failed to get an instance of Cipher", e)
-        }
 
         fingerprint_frame.setOnClickListener { _ ->
             run {
                 val fingerprintDialog = FingerprintDialog()
-                if (initCipher(defaultCipher)) {
-                    fingerprintDialog.cryptoObject = FingerprintManager.CryptoObject(defaultCipher)
+                if (initSignature()) {
+                    fingerprintDialog.cryptoObject = FingerprintManager.CryptoObject(signature)
                     fingerprintDialog.show(fragmentManager, "FingerprintDialog")
                 }
             }
         }
 
         button_delete.setOnClickListener { _ ->
-            inputField.text = SpannableStringBuilder(inputField.text.substring(0, inputField.text.length - 1))
+            val length = inputField.text.length
+            inputField.text.delete(length - 1, length)
         }
 
         hideKeypadButton.setOnClickListener { _ -> toggleKeypad() }
@@ -121,7 +108,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun numberClick(view: View) {
-        inputField.append(view.tag?.toString())
+        if (inputField.text.length < 128) {
+            inputField.append(view.tag?.toString())
+        }
     }
 
     private fun toggleKeypad() {
@@ -152,25 +141,25 @@ class LoginActivity : AppCompatActivity() {
         try {
             keyStore?.load(null)
 
-            keyGenerator?.init(KeyGenParameterSpec.Builder(
+            keyGenerator?.initialize(KeyGenParameterSpec.Builder(
                     KEY_NAME,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    KeyProperties.PURPOSE_SIGN)
+                        .setDigests(KeyProperties.DIGEST_SHA256)
+                        .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
                         .setUserAuthenticationRequired(true)
-                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                         .build())
-            keyGenerator?.generateKey()
+            keyGenerator?.generateKeyPair()
         } catch (e: Exception) {
             e.printStackTrace()
             return
         }
     }
 
-    private fun initCipher(cipher: Cipher): Boolean {
+    private fun initSignature(): Boolean {
         return try {
             keyStore?.load(null)
-            val key = keyStore?.getKey(KEY_NAME, null)
-            cipher.init(Cipher.ENCRYPT_MODE, key)
+            val privateKey = keyStore?.getKey(KEY_NAME, null) as PrivateKey
+            signature.initSign(privateKey)
             true
         } catch (e: KeyPermanentlyInvalidatedException) {
             e.printStackTrace()
@@ -181,39 +170,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun tryEncrypt(cipher: Cipher) {
-        try {
-            val encrypted = cipher.doFinal(SECRET_BYTE_ARRAY)
-            Toast.makeText(this, "TEST", Toast.LENGTH_LONG).show()
-        } catch (e: BadPaddingException) {
-            Toast.makeText(this, "Failed to encrypt the data with the generated key. " + "Retry the purchase", Toast.LENGTH_LONG).show()
-            Log.e(TAG, "Failed to encrypt the data with the generated key." + e.message)
-        } catch (e: IllegalBlockSizeException) {
-            Toast.makeText(this, "Failed to encrypt the data with the generated key. " + "Retry the purchase", Toast.LENGTH_LONG).show()
-            Log.e(TAG, "Failed to encrypt the data with the generated key." + e.message)
-        }
-
-    }
-
-    private fun showAlreadyAuthenticated() {
-        Toast.makeText(this, "Already in..", LENGTH_SHORT).show()
-        val intent = keyGuardManager?.createConfirmDeviceCredentialIntent(null, null)
-        if (intent != null) {
-            startActivityForResult(intent, 1)
-        } else {
-            Toast.makeText(this, "nope4" , LENGTH_SHORT).show()
-
-        }
-    }
-
-    private fun showAuthenticationScreen() {
-        Toast.makeText(this, "Authenticate please..", LENGTH_SHORT).show()
-    }
-
     companion object {
         private const val TAG = "LoginActivity"
-        private const val KEY_NAME = "fingerprint_key"
-        private val SECRET_BYTE_ARRAY = byteArrayOf(1, 2, 3, 4, 5, 6)
+        const val KEY_NAME = "fingerprint_key"
     }
 
 }

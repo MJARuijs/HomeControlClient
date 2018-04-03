@@ -1,8 +1,9 @@
-package mjaruijs.servertest.server
+package mjaruijs.servertest.server.command
 
 import android.os.AsyncTask
 import android.util.Log
-import mjaruijs.servertest.server.CommandResult.*
+import mjaruijs.servertest.server.ConnectionResponse
+import mjaruijs.servertest.server.command.CommandResult.*
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException

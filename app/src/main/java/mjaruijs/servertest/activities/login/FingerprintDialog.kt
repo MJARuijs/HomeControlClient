@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fingerprint_dialog_content.*
 import mjaruijs.servertest.R
+import mjaruijs.servertest.server.ConnectionResponse
+import mjaruijs.servertest.server.authentication.EnrollFingerConnection
 
-class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {
+class FingerprintDialog : DialogFragment() {
 
     var cryptoObject: FingerprintManager.CryptoObject? = null
     private var handler: FingerprintHandler? = null
@@ -19,6 +21,14 @@ class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {
         handler = FingerprintHandler(activity.getSystemService(FingerprintManager::class.java) as FingerprintManager)
         retainInstance = true
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)
+
+        enrollFingerprint()
+    }
+
+    private fun enrollFingerprint() {
+        EnrollFingerConnection(object: ConnectionResponse() {
+
+        }).execute()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -42,11 +52,4 @@ class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {
         handler?.stopListening()
     }
 
-    override fun onAuthenticated() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

@@ -2,8 +2,9 @@ package mjaruijs.servertest.server
 
 import android.os.AsyncTask
 import android.util.Log
-import mjaruijs.servertest.server.ConnectionState.CONNECTION_CLOSED
-import mjaruijs.servertest.server.ConnectionState.NO_CONNECTION
+import mjaruijs.servertest.server.authentication.ConnectionState
+import mjaruijs.servertest.server.authentication.ConnectionState.CONNECTION_CLOSED
+import mjaruijs.servertest.server.authentication.ConnectionState.NO_CONNECTION
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException

@@ -6,9 +6,9 @@ import android.widget.Toast
 import mjaruijs.servertest.R
 import mjaruijs.servertest.fragments.PreferenceFragment
 import mjaruijs.servertest.server.ConnectionResponse
-import mjaruijs.servertest.server.ConnectionState
-import mjaruijs.servertest.server.ConnectionState.CONNECTION_CLOSED
 import mjaruijs.servertest.server.EndConnection
+import mjaruijs.servertest.server.authentication.ConnectionState
+import mjaruijs.servertest.server.authentication.ConnectionState.CONNECTION_CLOSED
 
 class MainActivity : AppCompatActivity() {
 

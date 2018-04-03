@@ -37,14 +37,7 @@ class FingerprintHandler(var fingerprintManager: FingerprintManager) : Fingerpri
     }
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
-
         Log.i("HANDLER", "YAS")
-    }
-
-    interface Callback {
-        fun onAuthenticated()
-
-        fun onError()
     }
 
 }

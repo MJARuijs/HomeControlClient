@@ -1,4 +1,4 @@
-package mjaruijs.servertest.server
+package mjaruijs.servertest.server.command
 
 enum class CommandResult {
 

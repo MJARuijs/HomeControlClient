@@ -1,4 +1,4 @@
-package mjaruijs.servertest.server
+package mjaruijs.servertest.server.authentication
 
 enum class ConnectionState {
 
@@ -8,7 +8,6 @@ enum class ConnectionState {
 
     ACCESS_DENIED,
 
-    CONNECTION_CLOSED,
-
+    CONNECTION_CLOSED
 
 }

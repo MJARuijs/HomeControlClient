@@ -45,6 +45,10 @@ class SecureClient(private val client: Client) {
         client.write(encryptor.doFinal(bytes))
     }
 
+    fun write(bytes: ByteArray) {
+        client.write(encryptor.doFinal(bytes))
+    }
+
     fun close() {
         client.close()
     }

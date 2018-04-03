@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import mjaruijs.servertest.R
-import mjaruijs.servertest.fragments.PreferenceFragment
 import mjaruijs.servertest.server.ConnectionResponse
 import mjaruijs.servertest.server.EndConnection
 import mjaruijs.servertest.server.authentication.ConnectionState
@@ -20,9 +19,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.main_activity)
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.preferences_holder, PreferenceFragment())
-                .commitAllowingStateLoss()
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.preferences_holder, PreferenceFragment())
+//                .commitAllowingStateLoss()
     }
 
     override fun onBackPressed() {

@@ -4,8 +4,8 @@ import android.os.AsyncTask
 import android.util.Log
 import mjaruijs.servertest.networking.SecureClient
 import mjaruijs.servertest.server.ConnectionResponse
-import mjaruijs.servertest.server.authentication.ConnectionState.ACCESS_DENIED
-import mjaruijs.servertest.server.authentication.ConnectionState.ACCESS_GRANTED
+import mjaruijs.servertest.server.authentication.ConnectionState.*
+import java.io.IOException
 
 class AccessConnection(private val response: ConnectionResponse) : AsyncTask<String, Void, ConnectionState>() {
 
@@ -13,14 +13,23 @@ class AccessConnection(private val response: ConnectionResponse) : AsyncTask<Str
 
         val client = SecureClient("192.168.0.11", 4444)
 
-        client.write(strings[0])
-        val response = when (client.read()) {
-            "ACCESS_GRANTED" -> ACCESS_GRANTED
-            else -> ACCESS_DENIED
+        return try {
+            Log.i(TAG, "str: ${strings[0]} ${strings[0].length}")
+            client.write(strings[0])
+            val response = when (client.read()) {
+                "ACCESS_GRANTED" -> ACCESS_GRANTED
+                else -> ACCESS_DENIED
+            }
+            Log.i(TAG, "response: $response")
+            client.close()
+            return response
+        } catch (e: IOException) {
+            e.printStackTrace()
+            NO_CONNECTION
+        } finally {
+            client.close()
         }
-        Log.i(TAG, "response: $response")
-        client.close()
-        return response
+
     }
 
     public override fun onPostExecute(result: ConnectionState) {

@@ -1,4 +1,4 @@
-package mjaruijs.servertest.networking
+package mjaruijs.networking.networking
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.KeyFactory
@@ -29,18 +29,18 @@ class SecureClient(private val client: Client) {
         client.write(keyPair.public.encoded)
 
         val keyFactory = KeyFactory.getInstance("RSA")
-        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(client.readBytes()))
+        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(client.read().array()))
 
         encryptor.init(Cipher.ENCRYPT_MODE, serverKey)
         decryptor.init(Cipher.DECRYPT_MODE, clientKey)
     }
 
-    fun read(): String {
-        val bytes = client.readBytes()
+    fun readMessage(): String {
+        val bytes = client.read().array()
         return String(decryptor.doFinal(bytes), UTF_8)
     }
 
-    fun write(message: String) {
+    fun writeMessage(message: String) {
         val bytes = message.toByteArray(UTF_8)
         client.write(encryptor.doFinal(bytes))
     }

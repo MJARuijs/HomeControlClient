@@ -1,4 +1,4 @@
-package mjaruijs.servertest.authentication
+package mjaruijs.networking.authentication
 
 class Enrollment(private val username: String,
                  private val deviceID: String,

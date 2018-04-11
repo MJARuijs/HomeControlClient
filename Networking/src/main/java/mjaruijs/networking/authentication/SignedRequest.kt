@@ -1,4 +1,4 @@
-package mjaruijs.servertest.authentication
+package mjaruijs.networking.authentication
 
 data class SignedRequest(private val enrollment: Enrollment, private val signedMessage: String) {
 

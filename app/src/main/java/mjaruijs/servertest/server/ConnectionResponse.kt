@@ -1,6 +1,6 @@
 package mjaruijs.servertest.server
 
-import mjaruijs.servertest.networking.SecureClient
+import mjaruijs.servertest.networking.networking.SecureClient
 import mjaruijs.servertest.server.authentication.ConnectionState
 import mjaruijs.servertest.server.command.CommandResult
 

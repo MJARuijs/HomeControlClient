@@ -14,9 +14,9 @@ import kotlinx.android.synthetic.main.login_activity.*
 import mjaruijs.servertest.R
 import mjaruijs.servertest.activities.MainActivity
 import mjaruijs.servertest.activities.login.FingerprintDialog.FingerDialogCallback
-import mjaruijs.servertest.authentication.Enrollment
-import mjaruijs.servertest.authentication.SignedRequest
-import mjaruijs.servertest.authentication.Signer
+import mjaruijs.servertest.networking.authentication.Enrollment
+import mjaruijs.servertest.networking.authentication.SignedRequest
+import mjaruijs.servertest.networking.authentication.Signer
 import mjaruijs.servertest.server.ConnectionResponse
 import mjaruijs.servertest.server.authentication.AccessConnection
 import mjaruijs.servertest.server.authentication.ConnectionState
@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
         hideKeypadButton.setImageDrawable(keypadArrowDown)
         setOnClickListeners()
 
-        registerToBackend()
+//        registerToBackend()
     }
 
     private fun setOnClickListeners() {

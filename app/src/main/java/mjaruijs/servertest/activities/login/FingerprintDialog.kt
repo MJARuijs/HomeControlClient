@@ -12,7 +12,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.fingerprint_dialog_content.*
 import mjaruijs.servertest.R
-import mjaruijs.servertest.authentication.Signer
+import mjaruijs.servertest.networking.authentication.Signer
 import java.security.Signature
 
 class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {

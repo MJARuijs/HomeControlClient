@@ -1,40 +1,23 @@
 package mjaruijs.servertest.server.command
 
 import android.os.AsyncTask
-import android.util.Log
+import mjaruijs.servertest.networking.networking.SecureClient
 import mjaruijs.servertest.server.ConnectionResponse
 import mjaruijs.servertest.server.command.CommandResult.*
-import java.io.DataInputStream
-import java.io.DataOutputStream
 import java.io.IOException
-import java.io.PrintWriter
-import java.net.Socket
 
 class CommandConnection(private val response: ConnectionResponse) : AsyncTask<String, Void, CommandResult>() {
 
     override fun doInBackground(vararg strings: String): CommandResult {
-        val client: Socket
-        val inputStream: DataInputStream
-        val outputStream: DataOutputStream
 
-        try {
-            client = Socket("192.168.0.14", 80)
-            inputStream = DataInputStream(client.getInputStream())
-            outputStream = DataOutputStream(client.getOutputStream())
+        val client = SecureClient("192.168.0.11", 4444)
 
-            Log.i(TAG, "Getting config")
-            val printWriter = PrintWriter(outputStream)
-            printWriter.println(strings[0])
-            printWriter.flush()
+        return try {
 
-            val inputLine = StringBuilder()
-            val lines: List<String> = inputStream.reader().readLines()
-
-            lines.forEach { l -> inputLine.append(l)}
-
-            Log.i(TAG, "Line: $inputLine")
-
-            return when (inputLine.toString()) {
+            val state = if (strings[1] == "true") "off" else "on"
+            client.writeMessage("${strings[0]}_$state")
+            val response = client.readMessage()
+            when (response) {
                 "SUCCESS" -> SUCCESS
                 "SOCKET_POWER_OFF" -> MAIN_POWER_OFF
                 "PC_STILL_ON" -> PC_STILL_ON
@@ -42,7 +25,9 @@ class CommandConnection(private val response: ConnectionResponse) : AsyncTask<St
                 else -> FAILED
             }
         } catch (e: IOException) {
-            return FAILED
+            FAILED
+        } finally {
+            client.close()
         }
 
     }

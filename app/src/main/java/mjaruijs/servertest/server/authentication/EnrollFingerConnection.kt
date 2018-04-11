@@ -2,9 +2,9 @@ package mjaruijs.servertest.server.authentication
 
 import android.os.AsyncTask
 import android.util.Log
-import mjaruijs.servertest.authentication.SignedRequest
-import mjaruijs.servertest.networking.Client
-import mjaruijs.servertest.networking.SecureClient
+import mjaruijs.servertest.networking.authentication.SignedRequest
+import mjaruijs.servertest.networking.networking.Client
+import mjaruijs.servertest.networking.networking.SecureClient
 import mjaruijs.servertest.server.ConnectionResponse
 import java.io.IOException
 
@@ -16,9 +16,7 @@ class EnrollFingerConnection(private val response: ConnectionResponse) : AsyncTa
             val client = SecureClient(Client("192.168.0.11", 4444))
             val size = params[0].toString().length
             Log.i("Enroll", "SIZE $size")
-            client.write("$size")
-//            client.write(params[0].toString())
-//            client.close()
+            client.writeMessage(params[0].toString())
             client
         } catch (e: IOException) {
             e.printStackTrace()

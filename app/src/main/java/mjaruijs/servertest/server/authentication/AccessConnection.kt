@@ -2,7 +2,7 @@ package mjaruijs.servertest.server.authentication
 
 import android.os.AsyncTask
 import android.util.Log
-import mjaruijs.servertest.networking.SecureClient
+import mjaruijs.servertest.networking.networking.SecureClient
 import mjaruijs.servertest.server.ConnectionResponse
 import mjaruijs.servertest.server.authentication.ConnectionState.*
 import java.io.IOException
@@ -15,8 +15,8 @@ class AccessConnection(private val response: ConnectionResponse) : AsyncTask<Str
 
         return try {
             Log.i(TAG, "str: ${strings[0]} ${strings[0].length}")
-            client.write(strings[0])
-            val response = when (client.read()) {
+            client.writeMessage(strings[0])
+            val response = when (client.readMessage()) {
                 "ACCESS_GRANTED" -> ACCESS_GRANTED
                 else -> ACCESS_DENIED
             }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Server Test</string>
+    <string name="app_name">Home Control</string>
     <string name="button_0">0</string>
     <string name="button_1">1</string>
     <string name="button_2">2</string>
@@ -106,5 +106,6 @@
 
     <string name="hideKeypad">M12, 13 L7.41, 8.59 6, 10 12, 16 18, 10 16.59, 8.59z</string>
     <string name="showKeypad">M12, 4 L6, 10 7.41, 11.41 12, 7 16.59, 11.41 18, 10z</string>
+    <string name="synchronize">Synchronize</string>
 
 </resources>

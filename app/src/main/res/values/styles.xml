@@ -17,5 +17,12 @@
         <item name="android:toolbarStyle">@color/colorPrimary</item>
     </style>
 
+    <style name="MainMenuTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/buttonColors</item>
+        <item name="android:toolbarStyle">@color/colorPrimary</item>
+    </style>
+
 </resources>
 

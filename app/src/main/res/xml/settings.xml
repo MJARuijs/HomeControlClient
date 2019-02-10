@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="pc_power"
-        android:title="Is the PC On?" />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="socket_power"
-        android:title="Is the Main power On?" />
+        android:title="Main power state" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pc_power"
+        android:title="PC state" />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="light"
-        android:title="Is the light on?" />
+        android:title="Light state" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="use_motion_sensor"
+        android:title="Use motion-sensor to control light" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="enable_notification_lighting"
+        android:title="Allow house lighting to flash upon receiving notifications" />
 
 </PreferenceScreen>

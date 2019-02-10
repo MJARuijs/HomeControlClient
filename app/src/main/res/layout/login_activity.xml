@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/loginConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/LoginTheme"
-    tools:context=".activities.login.LoginActivity">
+    tools:context=".activities.LoginActivity">
 
     <EditText
         android:id="@+id/inputField"
@@ -71,7 +72,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:animateLayoutChanges="true"
-        android:background="?attr/colorBackgroundFloating"
         android:visibility="visible"
         app:columnCount="3"
         app:layout_constraintBottom_toBottomOf="parent"

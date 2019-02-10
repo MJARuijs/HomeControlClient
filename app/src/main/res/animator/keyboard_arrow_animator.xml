@@ -1,6 +1,6 @@
 <set>
     <objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-        android:duration="5000"
+        android:duration="2000"
         android:propertyName="pathData"
         android:valueFrom="@string/hideKeypad"
         android:valueTo="@string/showKeypad"

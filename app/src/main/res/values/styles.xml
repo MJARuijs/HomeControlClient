@@ -1,8 +1,6 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -24,5 +22,21 @@
         <item name="android:toolbarStyle">@color/colorPrimary</item>
     </style>
 
+    <style name="Device_Settings_Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:statusBarColor">@color/darkNotificationBar</item>
+        <item name="colorPrimary">@color/darkPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/darkPrimary</item>
+        <item name="android:itemBackground">@color/darkPrimary</item>
+        <item name="itemIconTint">@color/darkPrimary</item>
+        <item name="itemTextColor">@drawable/navigation_bar_selector</item>
+    </style>
+
+    <style name="Alert_Dialog_Dark" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:background">@color/darkPrimaryDark</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">25sp</item>
+    </style>
 </resources>
 

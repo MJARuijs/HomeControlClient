@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/lamp_activity"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.lampsetup.LampActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/darkPrimaryDark"
+        android:elevation="1dp"
+        android:theme="@style/Device_Settings_Dark"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
+
+    <LinearLayout
+        android:id="@+id/switch_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/darkPrimary"
+        android:orientation="vertical"
+        android:visibility="visible" >
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/content_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+
+</LinearLayout>

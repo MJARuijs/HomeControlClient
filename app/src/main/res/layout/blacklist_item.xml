@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="0dp"
+    android:gravity="center_vertical"
+    android:onClick="onClick"
+    card_view:cardBackgroundColor="@color/darkPrimary"
+    card_view:cardCornerRadius="0dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/blacklist_text"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_marginBottom="0dp"
+            android:checkMark="?android:attr/listChoiceIndicatorSingle"
+            android:ellipsize="marquee"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:paddingEnd="7dip"
+            android:paddingStart="12dip"
+            android:scrollHorizontally="false"
+            android:textColor="?android:attr/textColorAlertDialogListItem"
+            android:textSize="20sp"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintLeft_toLeftOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1" />
+
+        <Button
+            android:id="@+id/blacklist_delete_button"
+            android:layout_width="88dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/r"
+            android:contentDescription="@string/app_icon"
+            android:tag="@string/app_icon"
+            android:onClick="onClickDeleteBlackCard"
+            android:text="Delete"
+            card_view:layout_constraintRight_toRightOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

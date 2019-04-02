@@ -24,6 +24,7 @@ class PreferenceFragment : android.preference.PreferenceFragment() {
     }
 
     fun synchronizeSettings() {
+        println("REQUESTING CONFIGURATIONS")
         MessageSender(object : MessageSender.ConnectionResponse {
             override fun result(message: String) {
                 println(message)

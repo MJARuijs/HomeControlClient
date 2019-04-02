@@ -13,17 +13,17 @@
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="light"
-        android:title="Light state" />
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="use_motion_sensor"
+        android:key="presence_detector"
         android:title="Use motion-sensor to control light" />
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="enable_notification_lighting"
-        android:title="Allow house lighting to flash upon receiving notifications" />
+        android:key="led_strip"
+        android:title="Allow lighting to flash upon receiving notifications" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="led_strip_state"
+        android:title="Enable ledstrip" />
 
 </PreferenceScreen>

@@ -39,5 +39,7 @@
     <string name="synchronize">Synchronize</string>
     <string name="enable_notificationlamps">Enable NotificationLamps</string>
     <string name="lamp_setup">Lamp Setup</string>
+    <string name="led_strip_setup">LedStrip</string>
+    <string name="enable">Enable</string>
 
 </resources>

@@ -28,6 +28,7 @@ import mjaruijs.homecontrol.colorpicker.Color
 import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
+import mjaruijs.homecontrol.networking.MessageSender
 
 import java.util.ArrayList
 
@@ -344,7 +345,7 @@ class LampActivity : AppCompatActivity() {
         @SuppressLint("InflateParams")
         fun init(context: Context, selectedCard: AppCard, subCardName: String?) {
             initialized = true
-            colors
+
             initColors()
 
             val layoutInflater = LayoutInflater.from(context)
@@ -374,6 +375,7 @@ class LampActivity : AppCompatActivity() {
             } else {
                 colorPickerPalette!!.drawPalette(colors, selectedCard.sublist[subCardName]!!.color.intValue)
             }
+
             colorAlertDialog = AlertDialog.Builder(context, R.style.Alert_Dialog_Dark)
                     .setTitle(R.string.color_picker_default_title)
                     .setView(colorPickerPalette)

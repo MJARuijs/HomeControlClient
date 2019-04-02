@@ -1,23 +1,66 @@
 package mjaruijs.homecontrol.networking.client
 
-import java.nio.charset.StandardCharsets.UTF_8
+import java.net.InetSocketAddress
+import java.nio.ByteBuffer
+import java.nio.channels.SocketChannel
 
-class MessageClient(host: String, port: Int) : Client(host, port) {
+class MessageClient(private val channel: SocketChannel) {
 
-    fun writeMessage(message: String) {
-        val bytes = message.toByteArray(UTF_8)
-        println(message)
-        write(bytes)
+    constructor(host: String, port: Int): this(SocketChannel.open()) {
+        val address = InetSocketAddress(host, port)
+        channel.connect(address)
     }
 
-    fun readMessage(): String {
+    private val readSizeBuffer = ByteBuffer.allocateDirect(Integer.BYTES)
 
-        return try {
-            val buffer = read()
-            String(buffer, UTF_8)
-        } catch (e: ClientException) {
-            "ERROR"
+    fun writeMessage(message: String) = write(message.toByteArray())
+
+    private fun write(bytes: ByteArray) {
+        val buffer = ByteBuffer.allocate(bytes.size + 4)
+        buffer.putInt(bytes.size)
+        buffer.put(bytes)
+        buffer.rewind()
+
+        channel.write(buffer)
+    }
+
+    fun readMessage() = String(read())
+
+    @Throws (ClientException::class)
+    fun read(): ByteArray {
+
+        // Read size
+        readSizeBuffer.clear()
+        val sizeBytesRead = channel.read(readSizeBuffer)
+
+        if (sizeBytesRead == -1) {
+            throw ClientException("Size was too large")
         }
+
+        readSizeBuffer.rewind()
+
+        // Read data
+        val size = readSizeBuffer.int
+
+        if (size > 1000) {
+            println("ERROR: too large: $size")
+            throw ClientException("Size was too large")
+        }
+
+        val data = ByteBuffer.allocate(size)
+        val bytesRead = channel.read(data)
+
+        if (bytesRead == -1) {
+            close()
+            throw ClientException("Client was closed")
+        }
+
+        data.rewind()
+        return data.array()
+    }
+
+    fun close() {
+        channel.close()
     }
 
 }

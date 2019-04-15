@@ -2,12 +2,13 @@ package mjaruijs.homecontrol.activities
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
@@ -16,27 +17,26 @@ import kotlinx.android.synthetic.main.login_activity.*
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog.FingerDialogCallback
-import mjaruijs.homecontrol.networking.MessageSender
 import mjaruijs.homecontrol.networking.NetworkManager
 import mjaruijs.homecontrol.networking.authentication.Signer
-import mjaruijs.homecontrol.networking.server.authentication.*
-import mjaruijs.homecontrol.services.NotificationListener
-import android.R.attr.delay
-import android.R.id.message
-import android.app.Notification
-import android.app.NotificationChannel
-import android.graphics.Color
-import android.support.v4.app.NotificationManagerCompat
+import mjaruijs.homecontrol.networking.authentication.CryptoHelper
+import mjaruijs.homecontrol.services.BroadCastReceiver
+import mjaruijs.homecontrol.services.ExceptionHandler
+import mjaruijs.homecontrol.services.QuickSettingsService
 
 
 class LoginActivity : AppCompatActivity() {
+
+    private val className = "login_activity"
 
     private val cryptoHelper = CryptoHelper()
 
     private var keypadArrowDown: AnimatedVectorDrawable? = null
     private var keypadArrowUp: AnimatedVectorDrawable? = null
     private var keypadShowing = true
-    private lateinit var notificationListener: Intent
+
+    private val broadcastReceiver = BroadCastReceiver(className, ::onReceive)
+    private val filter = IntentFilter("mjaruijs.home_control.FROM_SERVER_TO_$className")
 
     init {
         NetworkManager.addNetworks("Alpha Network", "devolo-17f")
@@ -47,37 +47,45 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.login_activity)
         inputField.setOnTouchListener{ _, _ -> true }
 
-        notificationListener = Intent(applicationContext, NotificationListener::class.java)
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler())
+
         keypadArrowDown = getDrawable(R.drawable.keyboard_arrow_animation) as AnimatedVectorDrawable
         keypadArrowUp = getDrawable(R.drawable.keypad_arrow_animation) as AnimatedVectorDrawable
 
         hideKeypadButton.setImageDrawable(keypadArrowDown)
         setOnClickListeners()
+
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel("HOME_CONTROL", "Home Control", NotificationManager.IMPORTANCE_DEFAULT)
         manager.createNotificationChannel(channel)
-        startService(notificationListener)
+        startService(Intent(this, QuickSettingsService::class.java))
 
-        Toast.makeText(this, "HALLO", LENGTH_SHORT).show()
+        NetworkManager.startClient(this)
     }
 
     override fun onRestart() {
         super.onRestart()
-        startService(notificationListener)
+        registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onResume() {
         super.onResume()
+        registerReceiver(broadcastReceiver, filter)
+    }
 
+    override fun onStop() {
+        unregisterReceiver(broadcastReceiver)
+        super.onStop()
+    }
 
-
-//        manager.notify(System.currentTimeMillis().toInt(), notification.build())
-//        Toast.makeText(this, "HALLO", LENGTH_SHORT).show()
-        startService(notificationListener)
+    override fun onDestroy() {
+        println("STOPPING")
+        NetworkManager.addSendOnlyMessage("close_connection")
+        NetworkManager.stopClient()
+        super.onDestroy()
     }
 
     private fun setOnClickListeners() {
-
         fingerprint_frame.setOnClickListener {
            registerToBackend()
         }
@@ -90,19 +98,7 @@ class LoginActivity : AppCompatActivity() {
         hideKeypadButton.setOnClickListener { toggleKeypad() }
 
         button_submit.setOnClickListener {
-//            startActivity(Intent(applicationContext, MainActivity::class.java))
-
-            MessageSender(object : MessageSender.ConnectionResponse {
-                override fun result(message: String) {
-                    when (message) {
-                        "ACCESS_GRANTED" -> startActivity(Intent(applicationContext, MainActivity::class.java))
-                        "ACCESS_DENIED" -> Toast.makeText(applicationContext, "Password is incorrect!", Toast.LENGTH_LONG).show()
-                        "NO_CONNECTION" -> Toast.makeText(applicationContext, "No connection!", Toast.LENGTH_LONG).show()
-                        "CONNECTION_CLOSED" -> Toast.makeText(applicationContext, "Connection Closed!", LENGTH_SHORT).show()
-                        else -> {}
-                    }
-                }
-            }).execute(inputField.text.toString())
+            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
         }
     }
 
@@ -118,8 +114,8 @@ class LoginActivity : AppCompatActivity() {
 
         val gridTranslation: ObjectAnimator = ObjectAnimator.ofFloat(gridLayout, "y", gridPosition)
         val arrowTranslation: ObjectAnimator = ObjectAnimator.ofFloat(hideKeypadButton, "y", arrowPosition)
-        gridTranslation.duration = 1500
-        arrowTranslation.duration = 1500
+        gridTranslation.duration = 3000
+        arrowTranslation.duration = 3000
 
         if (keypadShowing) {
             hideKeypadButton.setImageDrawable(keypadArrowDown)
@@ -168,8 +164,17 @@ class LoginActivity : AppCompatActivity() {
         fingerPrintDialog.show(fragmentManager, "FingerprintDialog")
     }
 
-    companion object {
-        private const val TAG = "LoginActivity"
+    private fun onReceive(response: String) {
+        val message = response.substring(response.indexOf(';') + 1)
+        println("RECEIVED BROADCAST: $message")
+
+        when (message) {
+            "ACCESS_GRANTED" -> startActivity(Intent(applicationContext, MainActivity::class.java))
+            "ACCESS_DENIED" -> Toast.makeText(applicationContext, "Password is incorrect!", Toast.LENGTH_LONG).show()
+            "NO_CONNECTION" -> Toast.makeText(applicationContext, "No connection!", Toast.LENGTH_LONG).show()
+            "CONNECTION_CLOSED" -> Toast.makeText(applicationContext, "Connection Closed!", LENGTH_SHORT).show()
+            else -> {}
+        }
     }
 
 //    interface AuthenticationCallback {

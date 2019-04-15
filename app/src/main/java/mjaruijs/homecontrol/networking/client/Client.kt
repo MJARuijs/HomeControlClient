@@ -1,17 +1,11 @@
 package mjaruijs.homecontrol.networking.client
 
 import android.util.Base64
-import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.nio.channels.SocketChannel
 import java.nio.charset.StandardCharsets.UTF_8
 
 open class Client(private val channel: SocketChannel) {
-
-    constructor(host: String, port: Int): this(SocketChannel.open()) {
-        val address = InetSocketAddress(host, port)
-        channel.connect(address)
-    }
 
     private val writeSizeBuffer = ByteBuffer.allocateDirect(Integer.BYTES)
     private val readSizeBuffer = ByteBuffer.allocateDirect(Integer.BYTES)
@@ -68,7 +62,7 @@ open class Client(private val channel: SocketChannel) {
         return Base64.decode(data.array(), Base64.NO_WRAP)
     }
 
-    fun close() {
+    private fun close() {
         channel.close()
     }
 

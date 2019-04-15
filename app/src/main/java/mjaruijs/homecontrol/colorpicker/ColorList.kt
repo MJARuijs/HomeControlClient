@@ -4,6 +4,9 @@ object ColorList {
 
     val colors = ArrayList<Color>()
 
+    var selection1 = 0
+    var selection2 = 0
+
     init {
         addColor(
                 Color(0, 255f, 0f, 0f),

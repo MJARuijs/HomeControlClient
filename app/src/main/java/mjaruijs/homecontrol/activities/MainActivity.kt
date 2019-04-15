@@ -2,29 +2,31 @@ package mjaruijs.homecontrol.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import mjaruijs.homecontrol.R
-import mjaruijs.homecontrol.activities.lampsetup.LampActivity
 import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
-import mjaruijs.homecontrol.networking.MessageSender
+import mjaruijs.homecontrol.networking.NetworkManager
 import mjaruijs.homecontrol.settings.PreferenceFragment
-import mjaruijs.homecontrol.networking.server.EndConnection
 
 class MainActivity : AppCompatActivity() {
 
     private val preferenceFragment = PreferenceFragment()
 
-    private var backPressedTime: Long = -1
-    private var backPressed: Boolean = false
+    private var backPressedTime = -1L
+    private var backPressed = false
+    private var userLeft = false
 
     private lateinit var colorPicker: ColorPicker
+
+    private val className = "preference_fragment"
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,9 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onStop() {
         super.onStop()
-        EndConnection().execute()
+        if (!userLeft) {
+//            NetworkManager.addSendOnlyMessage("close_connection")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -51,9 +55,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.synchronize -> preferenceFragment.synchronizeSettings()
-            R.id.lamp_setup -> startActivity(Intent(applicationContext, LampActivity::class.java))
+//            R.id.lamp_setup -> startActivity(Intent(applicationContext, LampActivity::class.java))
             R.id.led_strip_setup -> {
-                colorPicker.init(this)
+                colorPicker.init(this, 1)
+                colorPicker.show()
+            }
+            R.id.lamp_setup -> {
+                colorPicker.init(this, 2)
                 colorPicker.show()
             }
             else -> super.onOptionsItemSelected(item)
@@ -63,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (backPressed) {
-            EndConnection().execute()
+            userLeft = true
             finish()
         } else {
             backPressedTime = System.currentTimeMillis()
@@ -75,31 +83,39 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("InflateParams")
     inner class ColorPicker {
 
-        private var selectedColor = 0
+        private var selectedColor1 = 0
+        private var selectedColor2 = 0
         private var colorPickerPalette: ColorPickerPalette? = null
         private var colorAlertDialog: AlertDialog? = null
 
-        private var colors = IntArray(20)
+        private var colorArray = IntArray(20)
 
-        fun init(context: Context) {
+        fun init(context: Context, stripNumber: Int) {
             initColors()
 
             val layoutInflater = LayoutInflater.from(context)
             colorPickerPalette = layoutInflater.inflate(R.layout.custom_picker, null) as ColorPickerPalette
-            colorPickerPalette!!.init(colors.size, 5, object : ColorPickerSwatch.OnColorSelectedListener {
+            colorPickerPalette!!.init(colorArray.size, 5, object : ColorPickerSwatch.OnColorSelectedListener {
                 override fun onColorSelected(color: Int) {
-                    println(color)
-                    println(ColorList.getByIntValue(color).toString())
-                    selectedColor = color
-                    MessageSender(object : MessageSender.ConnectionResponse {
-                        override fun result(message: String) {
-                            colorAlertDialog!!.dismiss()
-                        }
-                    }).execute("StudyRoom", "led_strip", ColorList.getByIntValue(color).toString())
+
+                    if (stripNumber == 1) {
+                        ColorList.selection1 = colorArray.indexOf(color)
+                        selectedColor1 = color
+                    } else if (stripNumber == 2) {
+                        ColorList.selection2 = colorArray.indexOf(color)
+                        selectedColor2 = color
+                    }
+
+                    NetworkManager.addMessage(className, "StudyRoom|led_strip|strip=$stripNumber;${ColorList.getByIntValue(color)}")
+                    colorAlertDialog!!.dismiss()
                 }
             })
 
-            colorPickerPalette!!.drawPalette(colors, selectedColor)
+            if (stripNumber == 1) {
+                colorPickerPalette!!.drawPalette(colorArray, selectedColor1)
+            } else if (stripNumber == 2) {
+                colorPickerPalette!!.drawPalette(colorArray, selectedColor2)
+            }
 
             colorAlertDialog = AlertDialog.Builder(context, R.style.Alert_Dialog_Dark)
                     .setTitle("Select a Color")
@@ -113,7 +129,7 @@ class MainActivity : AppCompatActivity() {
 
         private fun initColors() {
             for ((index, color) in ColorList.colors.withIndex()) {
-                colors[index] = color.intValue
+                colorArray[index] = color.intValue
             }
         }
     }

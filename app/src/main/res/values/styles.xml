@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="preferenceTheme">@style/PreferenceStyle</item>
     </style>
 
     <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -17,9 +18,10 @@
 
     <style name="MainMenuTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/buttonColors</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:toolbarStyle">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/PreferenceStyle</item>
     </style>
 
     <style name="Device_Settings_Dark" parent="Theme.AppCompat.NoActionBar">
@@ -37,6 +39,28 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="PreferenceStyle" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/CustomPreferenceCategory</item>
+        <item name="switchPreferenceCompatStyle">@style/CustomPreferenceSwitch</item>
+        <item name="switchPreferenceStyle">@style/CustomPreferenceSwitch</item>
+    </style>
+
+    <style name="CustomPreferenceCategory" parent="@style/Preference.Category">
+        <item name="android:layout">@layout/custom_preference_category</item>
+    </style>
+
+    <style name="CustomPreferenceCategoryText" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomPreferenceSwitch" parent="@style/Preference.SwitchPreference">
+        <!--<item name="android:layout">@layout/custom_preference_category</item>-->
+        <item name="android:color">@color/buttonColors</item>
+        <item name="android:colorAccent">@color/buttonColors</item>
+        <item name="android:colorBackground">@color/buttonColors</item>
     </style>
 </resources>
 

@@ -28,7 +28,6 @@ import mjaruijs.homecontrol.colorpicker.Color
 import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
-import mjaruijs.homecontrol.networking.MessageSender
 
 import java.util.ArrayList
 

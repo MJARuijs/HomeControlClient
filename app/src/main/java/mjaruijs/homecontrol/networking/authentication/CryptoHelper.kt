@@ -1,4 +1,4 @@
-package mjaruijs.homecontrol.networking.server.authentication
+package mjaruijs.homecontrol.networking.authentication
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties

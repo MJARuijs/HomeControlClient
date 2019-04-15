@@ -7,8 +7,9 @@ import java.nio.channels.SocketChannel
 class MessageClient(private val channel: SocketChannel) {
 
     constructor(host: String, port: Int): this(SocketChannel.open()) {
-        val address = InetSocketAddress(host, port)
-        channel.connect(address)
+        println("TRYING TO CONNECT")
+        channel.connect(InetSocketAddress(host, port))
+        println("CONNECTED")
     }
 
     private val readSizeBuffer = ByteBuffer.allocateDirect(Integer.BYTES)

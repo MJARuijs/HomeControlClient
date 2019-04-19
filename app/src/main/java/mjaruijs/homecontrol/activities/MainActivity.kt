@@ -2,6 +2,7 @@ package mjaruijs.homecontrol.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -10,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import mjaruijs.homecontrol.R
+import mjaruijs.homecontrol.activities.lampsetup.LampActivity
 import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
@@ -55,15 +57,15 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.synchronize -> preferenceFragment.synchronizeSettings()
-//            R.id.lamp_setup -> startActivity(Intent(applicationContext, LampActivity::class.java))
+            R.id.lamp_setup -> startActivity(Intent(applicationContext, LampActivity::class.java))
             R.id.led_strip_setup -> {
                 colorPicker.init(this, 1)
                 colorPicker.show()
             }
-            R.id.lamp_setup -> {
-                colorPicker.init(this, 2)
-                colorPicker.show()
-            }
+//            R.id.lamp_setup -> {
+//                colorPicker.init(this, 2)
+//                colorPicker.show()
+//            }
             else -> super.onOptionsItemSelected(item)
         }
         return true

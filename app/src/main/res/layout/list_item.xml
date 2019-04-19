@@ -48,8 +48,7 @@
             android:layout_margin="@dimen/color_swatch_margins_small"
             android:background="@drawable/button"
             android:text="@string/PLUS_SIGN"
-            android:textSize="16sp"
-            android:onClick="onClickAddButton" />
+            android:textSize="16sp" />
 
     </RelativeLayout>
 

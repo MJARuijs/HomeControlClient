@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AlertDialog
@@ -17,19 +18,24 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
+import kotlinx.android.synthetic.main.content_main.*
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.lampsetup.adapters.AppListAdapter
 import mjaruijs.homecontrol.activities.lampsetup.adapters.CardAdapter
-import mjaruijs.homecontrol.activities.lampsetup.data.*
+import mjaruijs.homecontrol.activities.lampsetup.data.AppItem
+import mjaruijs.homecontrol.activities.lampsetup.data.AppList
+import mjaruijs.homecontrol.activities.lampsetup.data.Data
+import mjaruijs.homecontrol.activities.lampsetup.data.PackageInfo
 import mjaruijs.homecontrol.activities.lampsetup.data.cards.AppCard
 import mjaruijs.homecontrol.activities.lampsetup.data.cards.AppCardList
-import mjaruijs.homecontrol.colorpicker.Color
 import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
-
 import java.util.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.indices
+import kotlin.collections.set
 
 class LampActivity : AppCompatActivity() {
 
@@ -38,65 +44,26 @@ class LampActivity : AppCompatActivity() {
 
     private var deleteAllCardsDialog: AlertDialog? = null
     private var deleteMultipleCardsDialog: AlertDialog? = null
-    private var duplicationDialog: AlertDialog? = null
-    private var appListDialog: Dialog? = null
+    private lateinit var duplicationDialog: AlertDialog
+    private lateinit var appListDialog: Dialog
 
     private val colorPicker = ColorPicker()
-    private val iconMap = IconMap()
+    private val iconMap = HashMap<String, Drawable>()
 
-    private lateinit var appCardView: RecyclerView
     private lateinit var appCardAdapter: CardAdapter
-
-//    lateinit var contentView: View
-
-    private val installedApps: ArrayList<PInfo>
-
-    @Throws(PackageManager.NameNotFoundException::class)
-    get() {
-        val res = ArrayList<PInfo>()
-        val flags = PackageManager.GET_META_DATA or PackageManager.GET_SHARED_LIBRARY_FILES
-
-        val pm = packageManager
-
-        val applications = pm.getInstalledPackages(flags)
-
-        for (appInfo in applications) {
-            if ((((appInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1)
-                            || (appInfo.applicationInfo.loadLabel(packageManager).toString() == "Gmail")
-                            || (appInfo.applicationInfo.loadLabel(packageManager).toString() == "YouTube")
-                            || (appInfo.packageName.contains("facebook")) && !appInfo.applicationInfo.loadLabel(packageManager).toString().contains("App")
-                            || (appInfo.applicationInfo.loadLabel(packageManager).toString().contains("Messenger")))) {
-                val newInfo = PInfo()
-                newInfo.appName = appInfo.applicationInfo.loadLabel(packageManager).toString()
-                newInfo.icon = appInfo.applicationInfo.loadIcon(packageManager)
-                res.add(newInfo)
-                iconMap.add(newInfo.appName, newInfo.icon!!)
-            }
-        }
-        return res
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lamp_activity)
 
-//        contentView = findViewById(R.id.main_activity)
-
-        // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Recycle View
-        appCardView = findViewById(R.id.recycle_view)
+        recycle_view.layoutManager = LinearLayoutManager(applicationContext)
 
-        val appCardManager = LinearLayoutManager(applicationContext)
-
-        appCardView.layoutManager = appCardManager
-
-        // Get a list of installed apps.
-        var applicationPackages: ArrayList<PInfo> = ArrayList()
+        var applicationPackages = ArrayList<PackageInfo>()
         try {
-            applicationPackages = installedApps
+            applicationPackages = getInstalledApps()
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
@@ -107,7 +74,7 @@ class LampActivity : AppCompatActivity() {
         cards = Data.getCards(file, iconMap)!!
 
         appCardAdapter = CardAdapter(cards)
-        appCardView.adapter = appCardAdapter
+        recycle_view.adapter = appCardAdapter
 
         val appList = AppList()
 
@@ -122,40 +89,40 @@ class LampActivity : AppCompatActivity() {
         val appListView = RecyclerView(this)
 
         val llm = LinearLayoutManager(this)
-        appListView.layoutManager = llm
 
+        appListView.layoutManager = llm
         appListView.adapter = appListAdapter
 
         val builder = AlertDialog.Builder(this, R.style.Alert_Dialog_Dark)
         builder.setTitle("Apps")
-        builder.setView(appListView)
+                .setView(appListView)
                 .setPositiveButton("Ok") { _, _ -> }
 
         appListDialog = builder.create()
-    }
 
-    fun onClickFAB(v: View) {
-        appListDialog!!.show()
-    }
+        duplicationDialog = AlertDialog.Builder(this, R.style.Alert_Dialog_Dark)
+                .setTitle("Duplication!")
+                .setMessage("This app is already in your list!")
+                .setPositiveButton("Ok") { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
 
-    fun onClickAddButton(v: View) {
-        val button = v.findViewById<Button>(R.id.add_button)
-
-        if (!cards.contains(button.tag.toString())) {
-            val appName = button.tag.toString()
-            val icon = iconMap.getValue(appName)
-
-            cards.addCard(AppCard(appName, icon!!, Color(19, 255f, 255f, 255f)))
-            appCardAdapter.notifyDataSetChanged()
-        } else {
-            duplicationDialog = AlertDialog.Builder(this, R.style.Alert_Dialog_Dark)
-                    .setTitle("Duplication!")
-                    .setMessage("This app is already in your list!")
-                    .setPositiveButton("Ok") { dialog, _ ->
-                        dialog.dismiss()
-                    }.create()
-            duplicationDialog!!.show()
+        fab.setOnClickListener {
+            appListDialog.show()
         }
+
+//        add_button.setOnClickListener {
+//            if (cards.contains(add_button.tag.toString())) {
+//                duplicationDialog.show()
+//            } else {
+//                val appName = add_button.tag.toString()
+//                val icon = iconMap.getValue(appName)
+//
+//                cards.addCard(AppCard(appName, icon, Color(19, 255f, 255f, 255f)))
+//                appCardAdapter.notifyDataSetChanged()
+//            }
+//        }
+
     }
 
     fun onClickDeleteSubCard(view: View) {
@@ -192,11 +159,11 @@ class LampActivity : AppCompatActivity() {
                     .create()
             deleteMultipleCardsDialog!!.show()
         } else {
-            appCardView.findViewWithTag<View>(tag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
-            appCardView.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
+            recycle_view.findViewWithTag<View>(tag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
+            recycle_view.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
             cards.deleteCard(v.tag.toString())
             cards.deselectCards()
             appCardAdapter.notifyDataSetChanged()
@@ -212,11 +179,11 @@ class LampActivity : AppCompatActivity() {
             val iconTag = card.appName + "_Icon"
             val deleteBtnTag = card.appName + "_Del_Btn"
             val deleteBackGrdTag = card.appName + "_Del_Backgrd"
-            appCardView.findViewWithTag<View>(tag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
-            appCardView.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
-            appCardView.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
+            recycle_view.findViewWithTag<View>(tag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
+            recycle_view.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
+            recycle_view.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
 
             if (deleteCard) {
                 cards.deleteCard(card.appName)
@@ -275,11 +242,11 @@ class LampActivity : AppCompatActivity() {
                         val iconTag = card.appName + "_Icon"
                         val deleteBtnTag = card.appName + "_Del_Btn"
                         val deleteBackGrdTag = card.appName + "_Del_Backgrd"
-                        appCardView.findViewWithTag<View>(tag).visibility = View.VISIBLE
-                        appCardView.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
-                        appCardView.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
-                        appCardView.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
-                        appCardView.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
+                        recycle_view.findViewWithTag<View>(tag).visibility = View.VISIBLE
+                        recycle_view.findViewWithTag<View>(nameTag).visibility = View.VISIBLE
+                        recycle_view.findViewWithTag<View>(iconTag).visibility = View.VISIBLE
+                        recycle_view.findViewWithTag<View>(deleteBtnTag).visibility = View.INVISIBLE
+                        recycle_view.findViewWithTag<View>(deleteBackGrdTag).visibility = View.INVISIBLE
                     }
                     cards.deselectCards()
                     cards.clear()
@@ -305,13 +272,8 @@ class LampActivity : AppCompatActivity() {
     }
 
     private fun cleanUp() {
-        if (appListDialog != null) {
-            appListDialog!!.dismiss()
-        }
-
-        if (duplicationDialog != null) {
-            duplicationDialog!!.dismiss()
-        }
+        appListDialog.dismiss()
+        duplicationDialog.dismiss()
 
         if (deleteAllCardsDialog != null) {
             deleteAllCardsDialog!!.dismiss()
@@ -331,6 +293,30 @@ class LampActivity : AppCompatActivity() {
             colorPicker.colorAlertDialog!!.dismiss()
         }
 
+    }
+
+    private fun getInstalledApps(): ArrayList<PackageInfo> {
+        val res = ArrayList<PackageInfo>()
+        val flags = PackageManager.GET_META_DATA or PackageManager.GET_SHARED_LIBRARY_FILES
+
+        val pm = packageManager
+
+        val applications = pm.getInstalledPackages(flags)
+
+        for (appInfo in applications) {
+            if ((((appInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1)
+                            || (appInfo.applicationInfo.loadLabel(packageManager).toString() == "Gmail")
+                            || (appInfo.applicationInfo.loadLabel(packageManager).toString() == "YouTube")
+                            || (appInfo.packageName.contains("facebook")) && !appInfo.applicationInfo.loadLabel(packageManager).toString().contains("App")
+                            || (appInfo.applicationInfo.loadLabel(packageManager).toString().contains("Messenger")))) {
+                val newInfo = PackageInfo()
+                newInfo.appName = appInfo.applicationInfo.loadLabel(packageManager).toString()
+                newInfo.icon = appInfo.applicationInfo.loadIcon(packageManager)
+                res.add(newInfo)
+                iconMap[newInfo.appName] = newInfo.icon ?: continue
+            }
+        }
+        return res
     }
 
     internal inner class ColorPicker {
@@ -356,7 +342,7 @@ class LampActivity : AppCompatActivity() {
                         val states = arrayOf(IntArray(0))
                         val colors = intArrayOf(color)
                         val colorList = ColorStateList(states, colors)
-                        appCardView.findViewWithTag<View>(selectedCard.appName).backgroundTintList = colorList
+                        recycle_view.findViewWithTag<View>(selectedCard.appName).backgroundTintList = colorList
                     } else {
                         val subCard = selectedCard.sublist[subCardName]
 

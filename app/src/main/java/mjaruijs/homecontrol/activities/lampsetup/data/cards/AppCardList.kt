@@ -6,8 +6,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.ArrayList
 import java.util.Scanner
-
-import mjaruijs.homecontrol.activities.lampsetup.data.IconMap
 import mjaruijs.homecontrol.colorpicker.Color
 import mjaruijs.homecontrol.colorpicker.ColorList
 
@@ -17,7 +15,7 @@ class AppCardList : CardList() {
         get() {
             val selectedCards = ArrayList<AppCard>()
 
-            for (card in cards!!) {
+            for (card in cards) {
                 if (card.selected) {
                     selectedCards.add(card)
                 }
@@ -26,24 +24,24 @@ class AppCardList : CardList() {
         }
 
     fun deselectCards() {
-        for (card in cards!!) {
+        for (card in cards) {
             card.selected = false
         }
     }
 
     fun addCard(card: AppCard) {
         super.addCard(card)
-        cards!!.add(card)
+        cards.add(card)
     }
 
     override fun deleteCard(name: String) {
         super.deleteCard(name)
         val appName = name.replace("_Del_Btn", "")
 
-        for (i in cards!!.indices) {
+        for (i in cards.indices) {
 
-            if (cards!![i].appName == appName) {
-                cards!!.removeAt(i)
+            if (cards[i].appName == appName) {
+                cards.removeAt(i)
                 break
             }
 
@@ -53,7 +51,7 @@ class AppCardList : CardList() {
     override fun multipleSelected(): Boolean {
         var counter = 0
 
-        for (card in cards!!) {
+        for (card in cards) {
             if (card.selected) {
                 counter++
             }
@@ -67,12 +65,12 @@ class AppCardList : CardList() {
     }
 
     override fun get(i: Int): AppCard {
-        return cards!![i]
+        return cards[i]
     }
 
     override fun getByName(appName: String): AppCard? {
         super.getByName(appName)
-        for (card in cards!!) {
+        for (card in cards) {
 
             if (card.appName == appName) {
                 return card
@@ -84,15 +82,15 @@ class AppCardList : CardList() {
 
     override fun clear() {
         super.clear()
-        cards!!.clear()
+        cards.clear()
     }
 
     override fun toString(): String {
         val fileContent = StringBuilder("\n<app-list>")
 
-        if (cards!!.size > 0) {
+        if (cards.size > 0) {
 
-            for (card in cards!!) {
+            for (card in cards) {
 
                 fileContent
                         .append("\n\t\t<app-card>" + "\n\t\t\t<name>").append(card.appName).append("</name>")
@@ -117,7 +115,7 @@ class AppCardList : CardList() {
             file = appFile
         }
 
-        fun readFromXML(iconMap: IconMap): AppCardList {
+        fun readFromXML(iconMap: HashMap<String, Drawable>): AppCardList {
             val list = AppCardList()
             var line: String
             var appName = ""
@@ -127,17 +125,17 @@ class AppCardList : CardList() {
             var sublist = Sublist()
 
             try {
-                val sc = Scanner(file!!)
+                val sc = Scanner(file)
 
                 if (sc.hasNextLine()) {
                     do {
                         line = sc.nextLine()
                         when {
                             line.contains("<name>") -> {
-                                appName = CardList.getValue(line)
+                                appName = getValue(line)
                                 icon = iconMap.getValue(appName)
                             }
-                            line.contains("<color>") -> color = ColorList.getByIntValue(Integer.parseInt(CardList.getValue(line)))
+                            line.contains("<color>") -> color = ColorList.getByIntValue(Integer.parseInt(getValue(line)))
                             line.contains("<blacklist>") -> blacklist = Blacklist.readFromXML(sc)
                             line.contains("<sub-getCards>") -> sublist = Sublist.readFromXML(sc)
                             line.contains("</app-card>") -> list.addCard(AppCard(appName, icon!!, color, blacklist, sublist))

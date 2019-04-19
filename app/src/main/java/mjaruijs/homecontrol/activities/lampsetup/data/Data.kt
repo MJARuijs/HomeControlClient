@@ -1,5 +1,6 @@
 package mjaruijs.homecontrol.activities.lampsetup.data
 
+import android.graphics.drawable.Drawable
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -13,7 +14,7 @@ object Data {
     private var file: File? = null
     private var initialized = false
 
-    fun initialize(appFile: File, iconMap: IconMap) {
+    fun initialize(appFile: File, iconMap: HashMap<String, Drawable>) {
         val fileName = "app_array.xml"
         file = File(appFile, fileName)
         AppCardList.initialize(file!!)
@@ -21,7 +22,7 @@ object Data {
         initialized = true
     }
 
-    fun getCards(file: File, iconMap: IconMap): AppCardList? {
+    fun getCards(file: File, iconMap: HashMap<String, Drawable>): AppCardList? {
         if (!initialized) {
             initialize(file, iconMap)
         }

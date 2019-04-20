@@ -15,7 +15,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/app_icon"
+            android:id="@+id/app_item_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerVertical="true"
@@ -24,11 +24,11 @@
             android:tag="@string/app_icon" />
 
         <TextView
-            android:id="@+id/app_text"
+            android:id="@+id/app_item_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@+id/app_icon"
-            android:layout_toStartOf="@id/add_button"
+            android:layout_toEndOf="@+id/app_item_icon"
+            android:layout_toStartOf="@id/app_item_button"
             android:checkMark="?android:attr/listChoiceIndicatorSingle"
             android:ellipsize="marquee"
             android:gravity="center_vertical"
@@ -40,7 +40,7 @@
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/add_button"
+            android:id="@+id/app_item_button"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_alignParentEnd="true"

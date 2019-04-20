@@ -14,9 +14,11 @@ import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.login_activity.*
+import mjaruijs.homecontrol.InstalledAppsCache
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog.FingerDialogCallback
+import mjaruijs.homecontrol.activities.lampsetup.LampActivity
 import mjaruijs.homecontrol.networking.NetworkManager
 import mjaruijs.homecontrol.networking.authentication.Signer
 import mjaruijs.homecontrol.networking.authentication.CryptoHelper
@@ -48,7 +50,9 @@ class LoginActivity : AppCompatActivity() {
         inputField.setOnTouchListener{ _, _ -> true }
 
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler())
-
+        Thread {
+            InstalledAppsCache.get(this)
+        }.start()
         keypadArrowDown = getDrawable(R.drawable.keyboard_arrow_animation) as AnimatedVectorDrawable
         keypadArrowUp = getDrawable(R.drawable.keypad_arrow_animation) as AnimatedVectorDrawable
 
@@ -98,7 +102,8 @@ class LoginActivity : AppCompatActivity() {
         hideKeypadButton.setOnClickListener { toggleKeypad() }
 
         button_submit.setOnClickListener {
-            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
+            startActivity(Intent(this, LampActivity::class.java))
+//            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
         }
     }
 

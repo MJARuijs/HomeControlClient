@@ -1,86 +1,87 @@
 package mjaruijs.homecontrol.activities
 
+import android.animation.ObjectAnimator
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.View
 import kotlinx.android.synthetic.main.card_view.view.*
+import mjaruijs.homecontrol.R
 
 class OnSwipeTouchListener : View.OnTouchListener {
 
+    private val animationDuration = 250L
+
     private var dX = 0.0f
-    private var dY = 0.0f
 
     private var expanded = false
     private var expanding = false
     private var collapsing = false
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
-
+        v.performClick()
         when (event.action) {
             ACTION_DOWN -> {
                 dX = v.card_view_layout.x - event.rawX
-                dY = v.card_view_layout.y - event.rawY
             }
             ACTION_MOVE -> {
                 val translation = Math.max(-240.0f, Math.min((event.rawX + dX), 0.0f))
                 v.delete_button.translationX = translation + 240
                 v.delete_background.translationX = translation + 240
-
-                v.card_view_layout.animate()
-                        .x(translation)
-                        .setDuration(0)
-                        .start()
+                translateViews(Pair(v.card_view_layout, translation), animationLength = 0L)
             }
             ACTION_UP -> {
-                val translation = Math.max(-240.0f, Math.min((event.rawX + dX), 0.0f))
-//                v.delete_button.translationX = translation + 240 - v.delete_button.translationX
-//                v.delete_background.translationX = translation + 240 - v.delete_background.translationX
-
                 if (v.card_view_layout.x >= -240.0f && !expanded && event.rawX + dX < 10.0f) {
-                    v.card_view_layout.animate()
-                            .x(-240.0f)
-                            .setDuration(3000)
-                            .start()
+                    translateViews(
+                            Pair(v.findViewById(R.id.delete_background) as View, -1.0f),
+                            Pair(v.findViewById(R.id.delete_button) as View, -1.0f),
+                            Pair(v.card_view_layout, -240.0f)
+                    )
                     expanding = true
                 } else if (expanded && event.rawX + dX > -250.0f) {
-                    v.card_view_layout.animate()
-                            .x(0.0f)
-                            .setDuration(3000)
-                            .start()
+                    translateViews(
+                            Pair(v.findViewById(R.id.delete_background) as View, 240.0f),
+                            Pair(v.findViewById(R.id.delete_button) as View, 240.0f),
+                            Pair(v.card_view_layout, 0.0f)
+                    )
                     collapsing = true
                 }
 
                 if (expanding) {
                     expanded = true
-                    println("EXPANDED")
-                    v.delete_button.translationX = 0.0f
-                    v.delete_background.translationX = 0.0f
                 } else if (collapsing) {
                     expanded = false
-                    println("COLLAPSED")
-                    v.delete_button.translationX = 240.0f
-                    v.delete_background.translationX = 240.0f
-                } else {
-                    if (v.card_view_layout.x <= -240.0f) {
-                        println("EXPANDED")
-                        v.delete_button.translationX = 0.0f
-                        v.delete_background.translationX = 0.0f
-                        expanded = true
-                    }
-                    if (v.card_view_layout.x == 0.0f) {
-                        println("NOT EXPANDED")
-                        v.delete_button.translationX = 240.0f
-                        v.delete_background.translationX = 240.0f
-                        expanded = false
-                    }
                 }
+
                 expanding = false
                 collapsing = false
             }
+            ACTION_CANCEL -> {
+                expanded = if (v.card_view_layout.x >= -120.0f) {
+                    translateViews(
+                            Pair(v.findViewById(R.id.delete_background) as View, 240.0f),
+                            Pair(v.findViewById(R.id.delete_button) as View, 240.0f),
+                            Pair(v.card_view_layout, 0.0f)
+                    )
+                    false
+                } else {
+                    translateViews(
+                            Pair(v.findViewById(R.id.delete_background) as View, -1.0f),
+                            Pair(v.findViewById(R.id.delete_button) as View, -1.0f),
+                            Pair(v.card_view_layout, -240.0f)
+                    )
+                    true
+                }
+            }
         }
 
+        return true
+    }
 
-
-        return false
+    private fun translateViews(vararg translations: Pair<View, Float>, animationLength: Long = animationDuration) {
+        for (translation in translations) {
+            ObjectAnimator.ofFloat(translation.first, "translationX", translation.second).apply {
+                duration = animationLength
+            }.start()
+        }
     }
 }

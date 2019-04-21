@@ -1,10 +1,12 @@
 package mjaruijs.homecontrol.networking.client
 
+import android.util.Base64
+import android.util.Base64.NO_WRAP
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.nio.channels.SocketChannel
 
-class MessageClient(private val channel: SocketChannel) {
+open class EncodedClient(private val channel: SocketChannel) {
 
     constructor(host: String, port: Int): this(SocketChannel.open()) {
         println("TRYING TO CONNECT")
@@ -14,18 +16,26 @@ class MessageClient(private val channel: SocketChannel) {
 
     private val readSizeBuffer = ByteBuffer.allocateDirect(Integer.BYTES)
 
-    fun writeMessage(message: String) = write(message.toByteArray())
+    open fun writeMessage(message: String) = write(message.toByteArray())
 
-    private fun write(bytes: ByteArray) {
-        val buffer = ByteBuffer.allocate(bytes.size + 4)
-        buffer.putInt(bytes.size)
-        buffer.put(bytes)
-        buffer.rewind()
-
-        channel.write(buffer)
+    fun write(bytes: ByteArray) {
+        try {
+            val encodedBytes = Base64.encode(bytes, NO_WRAP)
+            val bufferSize = encodedBytes.size.toString().toByteArray()
+            val encodedSize = Base64.encode(bufferSize, NO_WRAP)
+            val buffer = ByteBuffer.allocate(encodedBytes.size + encodedSize.size)
+            buffer.put(encodedSize)
+            buffer.put(encodedBytes)
+            buffer.rewind()
+//            println("WRITING ${String(encodedSize)}")
+            channel.write(buffer)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw ClientException("Invalid write!")
+        }
     }
 
-    fun readMessage() = String(read())
+    open fun readMessage() = String(read())
 
     @Throws (ClientException::class)
     fun read(): ByteArray {
@@ -35,14 +45,13 @@ class MessageClient(private val channel: SocketChannel) {
         val sizeBytesRead = channel.read(readSizeBuffer)
 
         if (sizeBytesRead == -1) {
-            throw ClientException("Size was too large")
+            return ByteArray(0)
         }
 
         readSizeBuffer.rewind()
 
         // Read data
-        val size = readSizeBuffer.int
-
+        val size = String(Base64.decode(readSizeBuffer.array(), NO_WRAP)).toInt()
         if (size > 1000) {
             println("ERROR: too large: $size")
             throw ClientException("Size was too large")
@@ -57,10 +66,10 @@ class MessageClient(private val channel: SocketChannel) {
         }
 
         data.rewind()
-        return data.array()
+        return Base64.decode(data.array(), NO_WRAP)
     }
 
-    fun close() {
+    private fun close() {
         channel.close()
     }
 

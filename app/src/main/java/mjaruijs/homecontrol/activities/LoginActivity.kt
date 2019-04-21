@@ -51,8 +51,9 @@ class LoginActivity : AppCompatActivity() {
 
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler())
         Thread {
-            InstalledAppsCache.get(this)
+//            InstalledAppsCache.get(this)
         }.start()
+
         keypadArrowDown = getDrawable(R.drawable.keyboard_arrow_animation) as AnimatedVectorDrawable
         keypadArrowUp = getDrawable(R.drawable.keypad_arrow_animation) as AnimatedVectorDrawable
 
@@ -83,7 +84,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        println("STOPPING")
         NetworkManager.addSendOnlyMessage("close_connection")
         NetworkManager.stopClient()
         super.onDestroy()
@@ -102,8 +102,8 @@ class LoginActivity : AppCompatActivity() {
         hideKeypadButton.setOnClickListener { toggleKeypad() }
 
         button_submit.setOnClickListener {
-            startActivity(Intent(this, LampActivity::class.java))
-//            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
+//            startActivity(Intent(this, LampActivity::class.java))
+            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
         }
     }
 

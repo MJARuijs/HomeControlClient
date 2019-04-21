@@ -1,13 +1,11 @@
 package mjaruijs.homecontrol.activities.lampsetup.appcardlist
 
-import android.content.Context
+import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
-import android.support.constraint.ConstraintSet
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
-import android.transition.TransitionManager
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -18,13 +16,6 @@ import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.OnSwipeTouchListener
 
 class AppCardListAdapter(private val apps: ArrayList<AppCardItem> = ArrayList()) : RecyclerView.Adapter<AppCardListAdapter.AppCardViewHolder>() {
-
-
-
-    init {
-
-
-    }
 
     fun add(appCard: AppCardItem) {
         apps += appCard
@@ -45,6 +36,11 @@ class AppCardListAdapter(private val apps: ArrayList<AppCardItem> = ArrayList())
     override fun onBindViewHolder(holder: AppCardViewHolder, position: Int) {
         val appCard = apps[position]
 
+        holder.cardView.translationX = 0.0f
+        holder.cardView.findViewById<ConstraintLayout>(R.id.card_view_layout).translationX = 0.0f
+        holder.deleteBackground.translationX = 240.0f
+        holder.deleteButton.translationX = 240.0f
+        holder.deleteBackground.scaleX = 1.0f
         holder.appName.text = appCard.name
         holder.appIcon.setImageDrawable(appCard.icon)
 
@@ -54,6 +50,46 @@ class AppCardListAdapter(private val apps: ArrayList<AppCardItem> = ArrayList())
         holder.appNotificationColor.backgroundTintList = colorStateList
 
         holder.cardView.setOnTouchListener(OnSwipeTouchListener())
+
+        holder.deleteButton.setOnClickListener {
+            animateDeletion(holder.cardView)
+            holder.cardView.postDelayed({
+                ObjectAnimator.ofFloat(holder.cardView, "translationX", -1440.0f).apply {
+                    duration = 250
+                }.start()
+            }, 300)
+            holder.cardView.postDelayed({
+                apps.removeAt(position)
+                notifyDataSetChanged()
+            }, 600)
+        }
+
+        holder.deleteBackground.setOnClickListener {
+            animateDeletion(holder.cardView)
+            holder.cardView.postDelayed({
+                ObjectAnimator.ofFloat(holder.cardView, "translationX", -1440.0f).apply {
+                    duration = 250
+                }.start()
+            }, 300)
+            holder.cardView.postDelayed({
+                apps.removeAt(position)
+                notifyDataSetChanged()
+            }, 600)
+        }
+    }
+
+    // TODO: Whenever a card is deleted, the cards below it move up to fill up its space. Animate this process.
+
+    private fun animateDeletion(cardView: CardView) {
+        ObjectAnimator.ofFloat(cardView.findViewById(R.id.delete_button), "translationX", -1440.0f).apply {
+            duration = 1000
+        }.start()
+        ObjectAnimator.ofFloat(cardView.findViewById(R.id.card_view_layout), "translationX", -1680.0f).apply {
+            duration = 1000
+        }.start()
+        ObjectAnimator.ofFloat(cardView.findViewById(R.id.delete_background), "scaleX", 12.96f).apply {
+            duration = 1000
+        }.start()
     }
 
     inner class AppCardViewHolder(view: View) : RecyclerView.ViewHolder(view) {

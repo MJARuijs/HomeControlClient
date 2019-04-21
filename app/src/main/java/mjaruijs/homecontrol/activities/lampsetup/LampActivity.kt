@@ -43,9 +43,6 @@ class LampActivity : AppCompatActivity() {
         dynamicDialog.addConfig("app_list", DialogConfig("Apps", null, appListView, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
         dynamicDialog.addConfig("duplication", DialogConfig("Duplication!", "This app is already in your list!", null, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
 
-//        val set = ConstraintSet()
-//        set.clone(card_view_root)
-
         fab.setOnClickListener {
             dynamicDialog.applyConfig("app_list")
             dynamicDialog.show()

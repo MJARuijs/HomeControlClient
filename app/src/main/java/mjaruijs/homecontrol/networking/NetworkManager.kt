@@ -4,18 +4,17 @@ import android.content.Context
 import android.content.Context.WIFI_SERVICE
 import android.content.Intent
 import android.net.wifi.WifiManager
-import android.util.LongSparseArray
 import android.util.SparseArray
 import mjaruijs.homecontrol.Constants.serverIP
 import mjaruijs.homecontrol.Constants.serverPort
-import mjaruijs.homecontrol.networking.client.MessageClient
+import mjaruijs.homecontrol.networking.client.SecureClient
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
 
 object NetworkManager {
 
-    private lateinit var client: MessageClient
+    private lateinit var client: SecureClient
     private lateinit var wifiManager: WifiManager
 
     private val networks = ArrayList<String>()
@@ -85,7 +84,8 @@ object NetworkManager {
 
         Thread {
             try {
-                client = MessageClient(serverIP, serverPort)
+//                client = MessageClient(serverIP, serverPort)
+                client = SecureClient(serverIP, serverPort)
                 clientInitialized.set(true)
             } catch (e: Exception) {
 

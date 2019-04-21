@@ -4,6 +4,7 @@ import java.net.InetSocketAddress
 import java.nio.channels.SocketChannel
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.KeyFactory
+import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.spec.X509EncodedKeySpec
@@ -12,15 +13,15 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
-class SecureClient(channel: SocketChannel): Client(channel) {
+class SecureClient(channel: SocketChannel) : EncodedClient(channel) {
 
     private companion object {
         val symmetricGenerator: KeyGenerator = KeyGenerator.getInstance("AES")
         val asymmetricGenerator: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
 
         init {
+            asymmetricGenerator.initialize(2048, SecureRandom.getInstanceStrong())
             symmetricGenerator.init(128)
-            asymmetricGenerator.initialize(2048, SecureRandom.getInstance("SHA1PRNG"))
         }
     }
 
@@ -28,24 +29,29 @@ class SecureClient(channel: SocketChannel): Client(channel) {
     private val decryptor = Cipher.getInstance("RSA/ECB/PKCS1Padding")
     private val symmetricKey: SecretKey
 
+    private val keyPair: KeyPair
+
     constructor(host: String, port: Int): this(SocketChannel.open(InetSocketAddress(host, port)))
 
     init {
         symmetricKey = symmetricGenerator.generateKey()
 
-        val keyPair = asymmetricGenerator.generateKeyPair()
+        keyPair = asymmetricGenerator.generateKeyPair()
         val clientKey = keyPair.private
 
         write(keyPair.public.encoded)
 
         val keyFactory = KeyFactory.getInstance("RSA")
-        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(read()))
+
+        val k = read()
+        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(k))
+
 
         encryptor.init(Cipher.PUBLIC_KEY, serverKey)
         decryptor.init(Cipher.PRIVATE_KEY, clientKey)
     }
 
-    fun readMessage(): String {
+    override fun readMessage(): String {
         return try {
             val message = read()
             val key = read()
@@ -57,16 +63,16 @@ class SecureClient(channel: SocketChannel): Client(channel) {
             cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
             val decryptedMessage = cipher.doFinal(message)
-
+            println(String(decryptedMessage))
             String(decryptedMessage, UTF_8)
         } catch (e: Exception) {
-            "CONNECTION_LOST"
+            throw ClientException("CONNECTION_LOST")
         }
 
     }
 
     @Throws (Exception::class)
-    fun writeMessage(message: String) {
+    override fun writeMessage(message: String) {
         val cipher = Cipher.getInstance("AES")
         cipher.init(Cipher.ENCRYPT_MODE, symmetricKey)
         val messageBytes = cipher.doFinal(message.toByteArray(UTF_8))

@@ -29,23 +29,18 @@ class SecureClient(channel: SocketChannel) : EncodedClient(channel) {
     private val decryptor = Cipher.getInstance("RSA/ECB/PKCS1Padding")
     private val symmetricKey: SecretKey
 
-    private val keyPair: KeyPair
-
     constructor(host: String, port: Int): this(SocketChannel.open(InetSocketAddress(host, port)))
 
     init {
         symmetricKey = symmetricGenerator.generateKey()
 
-        keyPair = asymmetricGenerator.generateKeyPair()
+        val keyPair = asymmetricGenerator.generateKeyPair()
         val clientKey = keyPair.private
 
         write(keyPair.public.encoded)
 
         val keyFactory = KeyFactory.getInstance("RSA")
-
-        val k = read()
-        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(k))
-
+        val serverKey = keyFactory.generatePublic(X509EncodedKeySpec(read()))
 
         encryptor.init(Cipher.PUBLIC_KEY, serverKey)
         decryptor.init(Cipher.PRIVATE_KEY, clientKey)

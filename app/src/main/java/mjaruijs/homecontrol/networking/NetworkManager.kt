@@ -32,11 +32,6 @@ object NetworkManager {
             val messageId = System.nanoTime().toInt()
             queue.addLast("id=$messageId;$message")
             pendingRequests.append(messageId, requester)
-        } else {
-//            Thread {
-//                client.writeMessage(message)
-                println("WRITTEN")
-//            }.start()
         }
     }
 

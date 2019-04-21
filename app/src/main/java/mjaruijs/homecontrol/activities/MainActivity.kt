@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         colorPicker = ColorPicker()
 
         Thread {
-            InstalledAppsCache.get(this)
+//            InstalledAppsCache.get(this)
         }.start()
     }
 

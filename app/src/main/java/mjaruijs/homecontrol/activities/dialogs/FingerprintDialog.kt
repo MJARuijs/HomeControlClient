@@ -25,7 +25,7 @@ class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)
+        setStyle(STYLE_NORMAL, android.R.style.Theme_Holo_Light_Dialog_NoActionBar)
         handler = FingerprintHandler(activity.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager, this)
     }
 
@@ -49,7 +49,7 @@ class FingerprintDialog : DialogFragment(), FingerprintHandler.Callback {
     }
 
     override val cryptoObject: CryptoObject
-        get() = FingerprintManager.CryptoObject(signature)
+        get() = CryptoObject(signature)
 
     override fun onSuccess(cryptoObject: CryptoObject) {
         callback?.onAuthenticated(Signer(cryptoObject))

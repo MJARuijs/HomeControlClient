@@ -37,15 +37,6 @@ object NetworkManager {
 
     fun ready() = clientInitialized.get()
 
-    fun test(message: String, context: Context) {
-        Thread {
-            startClient(context)
-            while (!clientInitialized.get()) {}
-            addMessage("", message)
-            stopClient()
-        }.start()
-    }
-
     fun addSendOnlyMessage(message: String) {
         if (clientInitialized.get()) {
             queue.addLast(message)
@@ -54,17 +45,6 @@ object NetworkManager {
                 client.writeMessage(message)
             }
         }
-    }
-
-    fun isConnectedToHomeNetwork(): Boolean {
-        val networkInfo = wifiManager.connectionInfo
-
-        if (networkInfo != null) {
-            val ssid = networkInfo.ssid.replace("\"", "")
-            return networks.contains(ssid)
-        }
-
-        return false
     }
 
     fun stopClient() {

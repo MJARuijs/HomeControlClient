@@ -1,13 +1,15 @@
 package mjaruijs.homecontrol.activities.lampsetup
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import kotlinx.android.synthetic.main.card_view.*
+import android.view.Menu
+import android.view.MenuItem
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.lamp_activity.*
+import mjaruijs.homecontrol.data.AppCardData
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.DialogButton
 import mjaruijs.homecontrol.activities.dialogs.DialogButtonType
@@ -29,11 +31,6 @@ class LampActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
-        appCardListAdapter = AppCardListAdapter()
-
-        recycle_view.adapter = appCardListAdapter
-        recycle_view.layoutManager = LinearLayoutManager(this)
-
         val appListAdapter = AppListAdapter(this, ::onAddClick)
         val appListView = RecyclerView(this)
         appListView.adapter = appListAdapter
@@ -43,22 +40,44 @@ class LampActivity : AppCompatActivity() {
         dynamicDialog.addConfig("app_list", DialogConfig("Apps", null, appListView, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
         dynamicDialog.addConfig("duplication", DialogConfig("Duplication!", "This app is already in your list!", null, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
 
+        appCardListAdapter = AppCardListAdapter(dynamicDialog, AppCardData.getAppCards(this, dynamicDialog))
+        recycle_view.adapter = appCardListAdapter
+        recycle_view.layoutManager = LinearLayoutManager(this)
+
         fab.setOnClickListener {
             dynamicDialog.applyConfig("app_list")
-            dynamicDialog.show()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.lamp_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.delete_all -> {
+                appCardListAdapter.deleteAll()
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     private fun onAddClick(appListItem: AppListItem) {
         if (appCardListAdapter.contains(appListItem.name)) {
             dynamicDialog.applyConfig("duplication")
-            dynamicDialog.show()
         } else {
-            appCardListAdapter.add(AppCardItem(appListItem))
+            appCardListAdapter.add(AppCardItem(dynamicDialog, appListItem))
             appCardListAdapter.notifyDataSetChanged()
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        dynamicDialog.clear()
+        AppCardData.write(this, appCardListAdapter.apps)
+    }
 
 //    internal inner class ColorPicker {
 //
@@ -83,7 +102,7 @@ class LampActivity : AppCompatActivity() {
 //                        val states = arrayOf(IntArray(0))
 //                        val colors = intArrayOf(color)
 //                        val colorList = ColorStateList(states, colors)
-////                        recycle_view.findViewWithTag<View>(selectedCard.appName).backgroundTintList = colorList
+//                        recycle_view.findViewWithTag<View>(selectedCard).backgroundTintList = colorList
 //                    } else {
 ////                        val subCard = selectedCard.sublist[subCardName]
 //
@@ -118,6 +137,6 @@ class LampActivity : AppCompatActivity() {
 //                colors[i] = color.intValue
 //            }
 //        }
-//
+
 //    }
 }

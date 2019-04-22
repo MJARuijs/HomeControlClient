@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.app_list_item.view.*
-import mjaruijs.homecontrol.InstalledAppsCache
+import mjaruijs.homecontrol.data.InstalledAppsCache
 import mjaruijs.homecontrol.R
 
 class AppListAdapter(context: Context, private val onAddButtonClick: (AppListItem) -> Unit) : RecyclerView.Adapter<AppListAdapter.AppListViewHolder>() {

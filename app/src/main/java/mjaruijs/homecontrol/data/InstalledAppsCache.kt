@@ -1,14 +1,16 @@
-package mjaruijs.homecontrol
+package mjaruijs.homecontrol.data
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import mjaruijs.homecontrol.activities.lampsetup.PackageInfo
+import android.graphics.drawable.Drawable
+import mjaruijs.homecontrol.R
 import java.util.concurrent.atomic.AtomicBoolean
 
 object InstalledAppsCache {
 
     private val apps = ArrayList<PackageInfo>()
+    private val icons = HashSet<Icon>()
     private val locked = AtomicBoolean(false)
 
     fun get(context: Context): ArrayList<PackageInfo> {
@@ -21,11 +23,15 @@ object InstalledAppsCache {
 
             val installedApps = packageManager.getInstalledApplications(flags)
 
+            icons += Icon(0, context.getDrawable(R.drawable.ic_launcher_background))
+
+            var i = 1
             for (appInfo in installedApps) {
                 if ((appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
                     val appName = appInfo.loadLabel(packageManager).toString()
                     val icon = appInfo.loadIcon(packageManager)
                     apps += PackageInfo(appName, icon)
+                    icons += Icon(i++, icon)
                 }
             }
 
@@ -37,5 +43,12 @@ object InstalledAppsCache {
         return apps
     }
 
+    fun getIcon(id: Int): Icon {
+        return icons.find { icon -> icon.id == id } ?: icons.first()
+    }
+
+    fun getIcon(drawable: Drawable): Icon {
+        return icons.find { icon -> icon.icon == drawable } ?: icons.first()
+    }
 
 }

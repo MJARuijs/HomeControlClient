@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import mjaruijs.homecontrol.InstalledAppsCache
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.lampsetup.LampActivity
 import mjaruijs.homecontrol.colorpicker.ColorList

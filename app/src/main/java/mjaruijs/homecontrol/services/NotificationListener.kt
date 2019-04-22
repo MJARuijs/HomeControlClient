@@ -23,8 +23,6 @@ class NotificationListener : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         settings.apply(true)
 
-        println("NOTIFICATION POSTED")
-
         if (sbn.packageName == "mjaruijs.homecontrol") return
 
         val appName = getAppName(sbn.packageName) ?: throw IllegalArgumentException()

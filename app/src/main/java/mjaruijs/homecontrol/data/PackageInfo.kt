@@ -1,4 +1,4 @@
-package mjaruijs.homecontrol.activities.lampsetup
+package mjaruijs.homecontrol.data
 
 import android.graphics.drawable.Drawable
 

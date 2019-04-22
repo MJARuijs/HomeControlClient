@@ -1,10 +1,70 @@
 package mjaruijs.homecontrol.activities.lampsetup.appcardlist
 
 import android.graphics.drawable.Drawable
+import android.support.v7.widget.CardView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import mjaruijs.homecontrol.data.InstalledAppsCache
+import mjaruijs.homecontrol.activities.dialogs.DynamicAlertDialog
 import mjaruijs.homecontrol.activities.lampsetup.applist.AppListItem
+import mjaruijs.homecontrol.activities.lampsetup.blacklist.BlackListAdapter
+import mjaruijs.homecontrol.activities.lampsetup.blacklist.BlackListItem
+import mjaruijs.homecontrol.activities.lampsetup.subcardlist.SubCardAdapter
+import mjaruijs.homecontrol.activities.lampsetup.subcardlist.SubCardItem
 
-class AppCardItem(val name: String, val icon: Drawable, val color: Int, var xPosition: Float = 0.0f, var isMoving: Boolean = false) {
+class AppCardItem(val dynamicDialog: DynamicAlertDialog,
+                  val name: String,
+                  val icon: Drawable,
+                  val color: Int = -1,
+                  subCards: ArrayList<SubCardItem> = ArrayList(),
+                  blackList: ArrayList<BlackListItem> = ArrayList(),
+                  var cardView: CardView? = null) {
 
-    constructor(appListItem: AppListItem) : this(appListItem.name, appListItem.icon, -1)
+    constructor(dynamicDialog: DynamicAlertDialog, appListItem: AppListItem) : this(dynamicDialog, appListItem.name, appListItem.icon)
 
+    val subListView = RecyclerView(dynamicDialog.context)
+    val subListAdapter = SubCardAdapter(subCards)
+
+    val blackListView = RecyclerView(dynamicDialog.context)
+    val blackListAdapter = BlackListAdapter(blackList)
+
+    init {
+        subListView.layoutManager = LinearLayoutManager(dynamicDialog.context)
+        subListView.adapter = subListAdapter
+
+        blackListView.layoutManager = LinearLayoutManager(dynamicDialog.context)
+        blackListView.adapter = blackListAdapter
+    }
+
+    companion object {
+        fun parse(dynamicDialog: DynamicAlertDialog, string: String): AppCardItem {
+            val values = string.split('|')
+            val appInfo = values[0].split(';')
+
+            val nameStartIndex = appInfo[0].indexOf('=') + 1
+            val name = appInfo[0].substring(nameStartIndex)
+
+            val iconStartIndex = appInfo[1].indexOf('=') + 1
+            val iconString = appInfo[1].substring(iconStartIndex)
+            val icon = InstalledAppsCache.getIcon(iconString.toInt())
+
+            val colorStartIndex = appInfo[2].indexOf('=') + 1
+            val color = appInfo[2].substring(colorStartIndex).toInt()
+
+            val subListStartIndex = values[1].indexOf('[') + 1
+            val subListEndIndex = values[1].lastIndexOf(']')
+            val subList = SubCardAdapter.parse(values[1].substring(subListStartIndex, subListEndIndex))
+
+            val blackListStartIndex = values[2].indexOf('[') + 1
+            val blackListEndIndex = values[2].lastIndexOf(']')
+            val blackList = BlackListAdapter.parse(values[2].substring(blackListStartIndex, blackListEndIndex))
+
+            return AppCardItem(dynamicDialog, name, icon.icon, color, subList, blackList)
+        }
+    }
+
+    override fun toString(): String {
+        val iconId = InstalledAppsCache.getIcon(icon).id
+        return "name=$name;icon=$iconId;color=$color|subList=[$subListAdapter]|blackList=[$blackListAdapter]"
+    }
 }

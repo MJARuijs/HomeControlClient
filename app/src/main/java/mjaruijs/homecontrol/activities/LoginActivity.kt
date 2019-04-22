@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.login_activity.*
-import mjaruijs.homecontrol.InstalledAppsCache
+import mjaruijs.homecontrol.data.InstalledAppsCache
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog.FingerDialogCallback

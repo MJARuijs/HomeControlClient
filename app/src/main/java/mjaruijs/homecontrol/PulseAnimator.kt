@@ -123,8 +123,8 @@ class PulseAnimator
     }
 
     public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = View.MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight
-        val height = View.MeasureSpec.getSize(heightMeasureSpec) - paddingTop - paddingBottom
+        val width = MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight
+        val height = MeasureSpec.getSize(heightMeasureSpec) - paddingTop - paddingBottom
 
         mCenterX = width * 0.5f
         mCenterY = height * 0.5f
@@ -152,9 +152,9 @@ class PulseAnimator
      */
     private fun build() {
         // create views and animators
-        val layoutParams = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT)
+        val layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT)
 
         val repeatCount = if (mRepeat == INFINITE) ObjectAnimator.INFINITE else mRepeat
 

@@ -32,7 +32,7 @@ import mjaruijs.homecontrol.R
  */
 class ColorPickerPalette : TableLayout {
 
-    private lateinit var mOnColorSelectedListener: ColorPickerSwatch.OnColorSelectedListener
+    lateinit var mOnColorSelectedListener: ColorPickerSwatch.OnColorSelectedListener
 
     private var mDescription: String? = null
     private var mDescriptionSelected: String? = null
@@ -65,10 +65,25 @@ class ColorPickerPalette : TableLayout {
         mDescriptionSelected = res.getString(R.string.color_swatch_description_selected)
     }
 
+    fun init(size: Int, columns: Int) {
+        mNumColumns = columns
+        val res = resources
+        if (size == 2) {
+            mSwatchLength = res.getDimensionPixelSize(R.dimen.color_swatch_large)
+            mMarginSize = res.getDimensionPixelSize(R.dimen.color_swatch_margins_large)
+        } else {
+            mSwatchLength = res.getDimensionPixelSize(R.dimen.color_swatch_small)
+            mMarginSize = res.getDimensionPixelSize(R.dimen.color_swatch_margins_small)
+        }
+
+        mDescription = res.getString(R.string.color_swatch_description)
+        mDescriptionSelected = res.getString(R.string.color_swatch_description_selected)
+    }
+
     private fun createTableRow(): TableRow {
         val row = TableRow(context)
-        val params = ViewGroup.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,
-                TableLayout.LayoutParams.WRAP_CONTENT)
+        val params = ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT)
         row.layoutParams = params
         return row
     }

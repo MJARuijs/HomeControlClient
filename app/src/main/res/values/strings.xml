@@ -36,5 +36,6 @@
     <string name="led_strip_setup">LedStrip</string>
     <string name="enable">Enable</string>
     <string name="delete">Delete</string>
+    <string name="delete_button_background">Delete Button Background</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package mjaruijs.homecontrol.activities.lampsetup.appcardlist
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.support.constraint.ConstraintLayout
@@ -10,7 +9,8 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.view.inputmethod.InputMethodManager.SHOW_FORCED
 import android.widget.Button
@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.card_view.view.*
 import mjaruijs.homecontrol.R
+import mjaruijs.homecontrol.activities.AnimationListener
 import mjaruijs.homecontrol.activities.OnSwipeTouchListener
 import mjaruijs.homecontrol.activities.dialogs.DialogButton
 import mjaruijs.homecontrol.activities.dialogs.DialogButtonType
@@ -80,10 +81,10 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
     override fun onBindViewHolder(holder: AppCardViewHolder, position: Int) {
         val appCard = apps[position]
 
-
         holder.cardView.translationX = 0.0f
         holder.cardView.findViewById<ConstraintLayout>(R.id.card_view_layout).translationX = 0.0f
-        holder.deleteBackground.translationX = 240.0f
+        holder.deleteBackground.translationX = 1376.0f
+        holder.deleteButtonBackground.translationX = 244.0f
         holder.deleteButton.translationX = 240.0f
         holder.deleteBackground.scaleX = 1.0f
         holder.appName.text = appCard.name
@@ -112,6 +113,15 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
             delete(holder.cardView, position)
         }
 
+        holder.appNotificationColor.setOnClickListener {
+            selectedDialog = "color_${appCard.name}"
+            dynamicDialog.applyConfig("color_picker")
+        }
+
+        holder.deleteButtonBackground.setOnClickListener {
+            delete(holder.cardView, position)
+        }
+
         holder.subCardsButton.setOnClickListener {
             selectedDialog = "sub_cards_${appCard.name}"
             appCard.dynamicDialog.applyConfig("sub_cards_${appCard.name}")
@@ -135,63 +145,55 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
         inputManager.toggleSoftInput(0, 0)
     }
 
-    fun deleteAll() {
-
-//        for ((i, appCard) in apps.withIndex()) {
-//            delete(appCard.cardView ?: return, i)
-//        }
-
-        animateDeletion(*apps.map { card -> card.cardView ?: return }.toTypedArray())
-//        apps.forEach { appCard ->
-//            animateDeletion(appCard.cardView ?: return)
-////            Thread.sleep(150)
-//        }
-//        apps.clear()
-//        notifyDataSetChanged()
-    }
-
     private fun delete(cardView: CardView, position: Int) {
-        animateDeletion(cardView)
-        cardView.postDelayed({
+        animateSingleDeletion(cardView) {
             apps.removeAt(position)
             notifyDataSetChanged()
-        }, 600)
+        }
     }
 
-//    private fun animateDeletion(cardViews: List<CardView>) = animateDeletion(*cardViews.toTypedArray())
-
-    private fun animateDeletion(vararg cardViews: CardView) {
-        for (cardView in cardViews) {
-            ObjectAnimator.ofFloat(cardView.findViewById(R.id.delete_button), "translationX", -1440.0f).apply {
-                duration = 1000
-            }.start()
-            ObjectAnimator.ofFloat(cardView.findViewById(R.id.card_view_layout), "translationX", -1680.0f).apply {
-                duration = 1000
-            }.start()
-            ObjectAnimator.ofFloat(cardView.findViewById(R.id.delete_background), "scaleX", 12.96f).apply {
-                duration = 1000
-            }.start()
-            cardView.postDelayed({
-                ObjectAnimator.ofFloat(cardView, "translationX", -1440.0f).apply {
-                    duration = 250
-                }.start()
-            }, 300)
-//            cardView.postDelayed({
-//                ObjectAnimator.ofFloat(cardView, "scaleX", 0.0f).apply {
-//                    duration = 250
-//                }.start()
-//            }, 300)
-//            cardView.postDelayed({
-//                ObjectAnimator.ofFloat(cardView, "scaleX", 1.0f).apply {
-//                    duration = 250
-//                }.start()
-//            }, 300)
+    fun deleteAll() {
+        val lastCard = apps.removeAt(apps.size - 1)
+        for ((i, app) in apps.withIndex()) {
+            animateSingleDeletion(app.cardView ?: return, i * 50L)
         }
+        animateSingleDeletion(lastCard.cardView ?: return, apps.size * 50L) {
+            apps.clear()
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun animateSingleDeletion(cardView: CardView, delay: Long = 0, onAnimationFinished: () -> Unit = {}) {
+        val firstTranslation = TranslateAnimation(0.0f, -1376.0f, 0.0f, 0.0f)
+        val cardTranslation = TranslateAnimation(0.0f, -1440.0f, 0.0f, 0.0f)
+
+        firstTranslation.interpolator = LinearInterpolator()
+        cardTranslation.interpolator = LinearInterpolator()
+
+        firstTranslation.fillAfter = true
+        cardTranslation.fillAfter = true
+
+        firstTranslation.duration = 250
+        cardTranslation.duration = 250
+
+        firstTranslation.startOffset = delay
+        cardTranslation.startOffset = 250 + delay
+
+        cardTranslation.setAnimationListener(AnimationListener {
+            onAnimationFinished()
+        })
+
+        cardView.findViewById<ImageView>(R.id.delete_button_background).startAnimation(firstTranslation)
+        cardView.findViewById<ImageView>(R.id.delete_background).startAnimation(firstTranslation)
+        cardView.findViewById<Button>(R.id.delete_button).startAnimation(firstTranslation)
+        cardView.findViewById<ConstraintLayout>(R.id.card_view_layout).startAnimation(firstTranslation)
+        cardView.startAnimation(cardTranslation)
     }
 
     inner class AppCardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var cardView: CardView = view.card_view
         var deleteButton: Button = view.delete_button
+        var deleteButtonBackground: ImageView = view.delete_button_background
         var deleteBackground: ImageView = view.delete_background
         var appName: TextView = view.app_name
         var appIcon: ImageView = view.app_icon

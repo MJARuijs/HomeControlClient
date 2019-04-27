@@ -1,6 +1,5 @@
 package mjaruijs.homecontrol.activities.lampsetup
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -9,8 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.lamp_activity.*
-import mjaruijs.homecontrol.data.AppCardData
 import mjaruijs.homecontrol.R
+import mjaruijs.homecontrol.activities.ColorPickerView
 import mjaruijs.homecontrol.activities.dialogs.DialogButton
 import mjaruijs.homecontrol.activities.dialogs.DialogButtonType
 import mjaruijs.homecontrol.activities.dialogs.DialogConfig
@@ -19,11 +18,13 @@ import mjaruijs.homecontrol.activities.lampsetup.appcardlist.AppCardItem
 import mjaruijs.homecontrol.activities.lampsetup.appcardlist.AppCardListAdapter
 import mjaruijs.homecontrol.activities.lampsetup.applist.AppListAdapter
 import mjaruijs.homecontrol.activities.lampsetup.applist.AppListItem
+import mjaruijs.homecontrol.data.AppCardData
 
 class LampActivity : AppCompatActivity() {
 
     private lateinit var appCardListAdapter: AppCardListAdapter
     private lateinit var dynamicDialog: DynamicAlertDialog
+    private lateinit var colorPickerView: ColorPickerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +37,12 @@ class LampActivity : AppCompatActivity() {
         appListView.adapter = appListAdapter
         appListView.layoutManager = LinearLayoutManager(this)
 
+        colorPickerView = ColorPickerView(this)
+
         dynamicDialog = DynamicAlertDialog(this)
         dynamicDialog.addConfig("app_list", DialogConfig("Apps", null, appListView, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
         dynamicDialog.addConfig("duplication", DialogConfig("Duplication!", "This app is already in your list!", null, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
+        dynamicDialog.addConfig("color_picker", DialogConfig("Select a color!", null, colorPickerView.getView()))
 
         appCardListAdapter = AppCardListAdapter(dynamicDialog, AppCardData.getAppCards(this, dynamicDialog))
         recycle_view.adapter = appCardListAdapter
@@ -73,8 +77,8 @@ class LampActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
         dynamicDialog.clear()
         AppCardData.write(this, appCardListAdapter.apps)
     }

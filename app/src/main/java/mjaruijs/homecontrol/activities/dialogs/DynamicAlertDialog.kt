@@ -22,6 +22,12 @@ class DynamicAlertDialog(val context: Context) {
         configs.putIfAbsent(name, config)
     }
 
+    fun getConfig(name: String) = configs[name]
+
+    fun replaceConfig(name: String, config: DialogConfig) {
+        configs[name] = config
+    }
+
     fun removeConfig(name: String) {
         configs.remove(name)
     }

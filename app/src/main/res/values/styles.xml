@@ -14,6 +14,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/buttonColors</item>
         <item name="android:toolbarStyle">@color/colorPrimary</item>
+        <item name="android:background">@color/white</item>
     </style>
 
     <style name="MainMenuTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -22,6 +23,8 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:toolbarStyle">@color/colorPrimary</item>
         <item name="preferenceTheme">@style/PreferenceStyle</item>
+        <!--<item name="android:background">@color/white</item>-->
+        <item name="android:colorBackground">@color/white</item>
     </style>
 
     <style name="Device_Settings_Dark" parent="Theme.AppCompat.NoActionBar">

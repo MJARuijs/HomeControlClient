@@ -20,6 +20,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.card_view.view.*
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.AnimationListener
+import mjaruijs.homecontrol.colorpicker.ColorPickerView
 import mjaruijs.homecontrol.activities.OnSwipeTouchListener
 import mjaruijs.homecontrol.activities.dialogs.DialogButton
 import mjaruijs.homecontrol.activities.dialogs.DialogButtonType
@@ -27,8 +28,10 @@ import mjaruijs.homecontrol.activities.dialogs.DialogConfig
 import mjaruijs.homecontrol.activities.dialogs.DynamicAlertDialog
 import mjaruijs.homecontrol.activities.lampsetup.blacklist.BlackListItem
 import mjaruijs.homecontrol.activities.lampsetup.subcardlist.SubCardItem
+import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
+import mjaruijs.homecontrol.data.AppCardData
 
-class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps: ArrayList<AppCardItem> = ArrayList()) : RecyclerView.Adapter<AppCardListAdapter.AppCardViewHolder>() {
+class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, private val colorPickerView: ColorPickerView, val apps: ArrayList<AppCardItem> = ArrayList()) : RecyclerView.Adapter<AppCardListAdapter.AppCardViewHolder>() {
 
     private var selectedDialog = ""
     private val inputManager = dynamicDialog.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -115,6 +118,17 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
 
         holder.appNotificationColor.setOnClickListener {
             selectedDialog = "color_${appCard.name}"
+            colorPickerView.setOnClickListener(object : ColorPickerSwatch.OnColorSelectedListener {
+                override fun onColorSelected(color: Int) {
+                    val state = arrayOf(intArrayOf(0))
+                    val colorArray = intArrayOf(color)
+                    val colorState = ColorStateList(state, colorArray)
+                    holder.appNotificationColor.backgroundTintList = colorState
+                    appCard.color = color
+                    println(color)
+                    dynamicDialog.dismiss()
+                }
+            })
             dynamicDialog.applyConfig("color_picker")
         }
 
@@ -149,10 +163,14 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
         animateSingleDeletion(cardView) {
             apps.removeAt(position)
             notifyDataSetChanged()
+            AppCardData.setCards(apps)
         }
     }
 
     fun deleteAll() {
+        if (apps.isEmpty()) {
+            return
+        }
         val lastCard = apps.removeAt(apps.size - 1)
         for ((i, app) in apps.withIndex()) {
             animateSingleDeletion(app.cardView ?: return, i * 50L)
@@ -161,11 +179,13 @@ class AppCardListAdapter(private val dynamicDialog: DynamicAlertDialog, val apps
             apps.clear()
             notifyDataSetChanged()
         }
+        AppCardData.setCards(apps)
     }
 
     private fun animateSingleDeletion(cardView: CardView, delay: Long = 0, onAnimationFinished: () -> Unit = {}) {
         val firstTranslation = TranslateAnimation(0.0f, -1376.0f, 0.0f, 0.0f)
         val cardTranslation = TranslateAnimation(0.0f, -1440.0f, 0.0f, 0.0f)
+
 
         firstTranslation.interpolator = LinearInterpolator()
         cardTranslation.interpolator = LinearInterpolator()

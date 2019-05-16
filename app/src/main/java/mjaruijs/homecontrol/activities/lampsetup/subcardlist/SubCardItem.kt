@@ -1,6 +1,6 @@
 package mjaruijs.homecontrol.activities.lampsetup.subcardlist
 
-data class SubCardItem(val name: String, val color: Int = -1) {
+data class SubCardItem(val name: String, var color: Int = -1) {
 
     companion object {
         fun parse(string: String): SubCardItem {

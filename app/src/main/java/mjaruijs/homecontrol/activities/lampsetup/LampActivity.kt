@@ -9,7 +9,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.lamp_activity.*
 import mjaruijs.homecontrol.R
-import mjaruijs.homecontrol.activities.ColorPickerView
+import mjaruijs.homecontrol.colorpicker.ColorPickerView
 import mjaruijs.homecontrol.activities.dialogs.DialogButton
 import mjaruijs.homecontrol.activities.dialogs.DialogButtonType
 import mjaruijs.homecontrol.activities.dialogs.DialogConfig
@@ -44,7 +44,7 @@ class LampActivity : AppCompatActivity() {
         dynamicDialog.addConfig("duplication", DialogConfig("Duplication!", "This app is already in your list!", null, DialogButton(DialogButtonType.POSITIVE, "Ok") { dynamicDialog.dismiss() }))
         dynamicDialog.addConfig("color_picker", DialogConfig("Select a color!", null, colorPickerView.getView()))
 
-        appCardListAdapter = AppCardListAdapter(dynamicDialog, AppCardData.getAppCards(this, dynamicDialog))
+        appCardListAdapter = AppCardListAdapter(dynamicDialog, colorPickerView, AppCardData.getAppCards(this, colorPickerView, dynamicDialog))
         recycle_view.adapter = appCardListAdapter
         recycle_view.layoutManager = LinearLayoutManager(this)
 
@@ -72,7 +72,7 @@ class LampActivity : AppCompatActivity() {
         if (appCardListAdapter.contains(appListItem.name)) {
             dynamicDialog.applyConfig("duplication")
         } else {
-            appCardListAdapter.add(AppCardItem(dynamicDialog, appListItem))
+            appCardListAdapter.add(AppCardItem(dynamicDialog, colorPickerView, appListItem))
             appCardListAdapter.notifyDataSetChanged()
         }
     }

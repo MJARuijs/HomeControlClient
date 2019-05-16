@@ -1,48 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="PC" />
-        <SwitchPreference
+        <mjaruijs.homecontrol.settings.SwitchPreference
             android:defaultValue="false"
             android:key="pc_socket_power"
             android:title="Main power state" />
 
-        <SwitchPreference
+        <mjaruijs.homecontrol.settings.SwitchPreference
             android:defaultValue="false"
             android:key="pc_power"
             android:title="PC state" />
 
     <PreferenceCategory android:title="Led Strips" />
-        <SwitchPreference
-            android:defaultValue="false"
+        <mjaruijs.homecontrol.settings.ClickableSwitchPreference
             android:key="led_strip_state1"
-            android:title="Enable ledstrip 1" />
+            android:title="LedStrip 1" />
 
-        <SwitchPreference
-            android:defaultValue="false"
+        <mjaruijs.homecontrol.settings.ClickableSwitchPreference
             android:key="led_strip_state2"
-            android:title="Enable ledstrip 2" />
+            android:title="LedStrip 2" />
 
-        <SwitchPreference
+        <mjaruijs.homecontrol.settings.SwitchPreference
             android:defaultValue="false"
             android:key="led_strip_notification"
             android:title="Allow lighting to flash upon receiving notifications" />
-
-        <!--<mjaruijs.homecontrol.settings.SeekbarPreference-->
-            <!--android:layout="@layout/seek_bar_preference"-->
-            <!--android:key="SeekBarTest"-->
-            <!--android:title="SeekBar" />-->
-        <!--<mjaruijs.homecontrol.settings.BadgePreference-->
-            <!--android:key="pref_key_export_text"-->
-            <!--android:title="Export as Text"-->
-            <!--android:summary="Export as data as plain text file. Keep the file safe as it is not encrypted"-->
-            <!--custom:badge="@drawable/circle"  />-->
-        <!--<ListPreference-->
-            <!--android:entries="@array/effects"-->
-            <!--android:entryValues="@array/effects"-->
-            <!--android:defaultValue="Static"-->
-            <!--android:key="led_strip_effect"-->
-            <!--android:title="Effect" />-->
 
 </PreferenceScreen>

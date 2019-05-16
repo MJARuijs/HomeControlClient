@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import mjaruijs.homecontrol.colorpicker.ColorPickerView
 import mjaruijs.homecontrol.data.InstalledAppsCache
 import mjaruijs.homecontrol.activities.dialogs.DynamicAlertDialog
 import mjaruijs.homecontrol.activities.lampsetup.applist.AppListItem
@@ -15,15 +16,16 @@ import mjaruijs.homecontrol.activities.lampsetup.subcardlist.SubCardItem
 class AppCardItem(val dynamicDialog: DynamicAlertDialog,
                   val name: String,
                   val icon: Drawable,
-                  val color: Int = -1,
-                  subCards: ArrayList<SubCardItem> = ArrayList(),
-                  blackList: ArrayList<BlackListItem> = ArrayList(),
+                  var color: Int = -1,
+                  colorPickerView: ColorPickerView,
+                  val subCards: ArrayList<SubCardItem> = ArrayList(),
+                  val blackList: ArrayList<BlackListItem> = ArrayList(),
                   var cardView: CardView? = null) {
 
-    constructor(dynamicDialog: DynamicAlertDialog, appListItem: AppListItem) : this(dynamicDialog, appListItem.name, appListItem.icon)
+    constructor(dynamicDialog: DynamicAlertDialog, colorPickerView: ColorPickerView, appListItem: AppListItem) : this(dynamicDialog, appListItem.name, appListItem.icon, colorPickerView = colorPickerView)
 
     val subListView = RecyclerView(dynamicDialog.context)
-    val subListAdapter = SubCardAdapter(subCards)
+    val subListAdapter = SubCardAdapter(dynamicDialog, colorPickerView, subCards)
 
     val blackListView = RecyclerView(dynamicDialog.context)
     val blackListAdapter = BlackListAdapter(blackList)
@@ -36,8 +38,12 @@ class AppCardItem(val dynamicDialog: DynamicAlertDialog,
         blackListView.adapter = blackListAdapter
     }
 
+    fun getInfo(): AppCardInfo {
+        return AppCardInfo(name, color, subCards, blackList)
+    }
+
     companion object {
-        fun parse(dynamicDialog: DynamicAlertDialog, string: String): AppCardItem {
+        fun parse(dynamicDialog: DynamicAlertDialog, colorPickerView: ColorPickerView, string: String): AppCardItem {
             val values = string.split('|')
             val appInfo = values[0].split(';')
 
@@ -59,8 +65,9 @@ class AppCardItem(val dynamicDialog: DynamicAlertDialog,
             val blackListEndIndex = values[2].lastIndexOf(']')
             val blackList = BlackListAdapter.parse(values[2].substring(blackListStartIndex, blackListEndIndex))
 
-            return AppCardItem(dynamicDialog, name, icon.icon, color, subList, blackList)
+            return AppCardItem(dynamicDialog, name, icon.icon, color, colorPickerView, subList, blackList)
         }
+
     }
 
     override fun toString(): String {

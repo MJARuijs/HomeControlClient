@@ -18,7 +18,6 @@ import mjaruijs.homecontrol.data.InstalledAppsCache
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog
 import mjaruijs.homecontrol.activities.dialogs.FingerprintDialog.FingerDialogCallback
-import mjaruijs.homecontrol.activities.lampsetup.LampActivity
 import mjaruijs.homecontrol.networking.NetworkManager
 import mjaruijs.homecontrol.networking.authentication.Signer
 import mjaruijs.homecontrol.networking.authentication.CryptoHelper
@@ -65,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
         manager.createNotificationChannel(channel)
         startService(Intent(this, QuickSettingsService::class.java))
 
-        NetworkManager.startClient(this)
+        NetworkManager.run(this)
     }
 
     override fun onRestart() {
@@ -102,8 +101,8 @@ class LoginActivity : AppCompatActivity() {
         hideKeypadButton.setOnClickListener { toggleKeypad() }
 
         button_submit.setOnClickListener {
-            startActivity(Intent(this, LampActivity::class.java))
-//            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
+//            startActivity(Intent(this, LampActivity::class.java))
+            NetworkManager.addMessage("login_activity", "PHONE: " + inputField.text.toString())
         }
     }
 

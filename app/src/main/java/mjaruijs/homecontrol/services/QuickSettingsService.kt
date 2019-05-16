@@ -1,6 +1,5 @@
 package mjaruijs.homecontrol.services
 
-import android.content.Intent
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
@@ -10,13 +9,16 @@ import mjaruijs.homecontrol.settings.Settings
 class QuickSettingsService : TileService() {
 
     private lateinit var settings: Settings
-//    private lateinit var notificationListener: Intent
+    private lateinit var enabledIcon: Icon
+    private lateinit var disabledIcon: Icon
 
     override fun onCreate() {
         super.onCreate()
         settings = Settings(applicationContext)
         settings.apply(true)
-//        notificationListener = Intent(applicationContext, NotificationListener::class.java)
+
+        enabledIcon = Icon.createWithResource(this, R.drawable.synchronize_icon)
+        disabledIcon = Icon.createWithResource(this, R.mipmap.lamp_icon)
     }
 
     override fun onTileAdded() {
@@ -34,8 +36,6 @@ class QuickSettingsService : TileService() {
         super.onClick()
         toggleTile()
         setTileState()
-        println("CLICKED ${settings.enableNotificationLighting}")
-
     }
 
     private fun setTileState() {
@@ -44,13 +44,11 @@ class QuickSettingsService : TileService() {
         if (settings.enableNotificationLighting) {
             tile.label = "LED enabled"
             tile.state = Tile.STATE_ACTIVE
-            tile.icon = Icon.createWithResource(this, R.drawable.synchronize_icon)
-//            startService(notificationListener)
+            tile.icon = enabledIcon
         } else {
             tile.label = "LED disabled"
             tile.state = Tile.STATE_ACTIVE
-            tile.icon = Icon.createWithResource(this, R.mipmap.lamp_icon)
-//            stopService(notificationListener)
+            tile.icon = disabledIcon
         }
 
         tile.updateTile()

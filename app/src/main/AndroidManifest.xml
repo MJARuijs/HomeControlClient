@@ -38,10 +38,6 @@
             android:name=".activities.MainActivity"
             android:theme="@style/MainMenuTheme" />
 
-        <activity
-            android:name=".activities.LedStripActivity"
-            android:theme="@style/MainMenuTheme" />
-
         <service
             android:name=".services.NotificationListener"
             android:label="HomeControl"

@@ -53,16 +53,4 @@ object ColorList {
         }
         return Color(-1, 0f, 0f, 0f)
     }
-
-    fun parseColor(value: String): Color {
-        val id = Integer.parseInt(value)
-        for (color in colors) {
-            if (color.id == id) {
-                return color
-            }
-        }
-
-        return Color(20, 0f, 0f, 0f)
-    }
-
 }

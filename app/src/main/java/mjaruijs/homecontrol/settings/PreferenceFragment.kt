@@ -4,14 +4,11 @@ import android.content.DialogInterface
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.Preference.OnPreferenceChangeListener
 import android.preference.PreferenceManager
-import android.preference.SwitchPreference
 import mjaruijs.homecontrol.R
 import mjaruijs.homecontrol.activities.dialogs.PowerWarningDialog
 import mjaruijs.homecontrol.networking.NetworkManager
 import mjaruijs.homecontrol.services.BroadCastReceiver
-//import mjaruijs.homecontrol.services.NotificationListener
 import java.util.regex.Pattern
 
 class PreferenceFragment : android.preference.PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -33,12 +30,12 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
         addPreferencesFromResource(R.xml.settings)
 
         setPreferenceListeners()
-        synchronizeSettings()
     }
 
     override fun onResume() {
         super.onResume()
         context.registerReceiver(broadcastReceiver, filter)
+        synchronizeSettings()
     }
 
     override fun onStop() {
@@ -64,44 +61,39 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
     }
 
     private fun setPreferenceListeners() {
-        findPreference("pc_socket_power").onPreferenceChangeListener = preferenceSwitchChangeListener
-        findPreference("pc_power").onPreferenceChangeListener = preferenceSwitchChangeListener
-        findPreference("led_strip_notification").onPreferenceChangeListener = preferenceSwitchChangeListener
-//        findPreference("led_strip_effect").onPreferenceChangeListener = preferenceListChangeListener
-        findPreference("led_strip_state1").onPreferenceChangeListener = preferenceSwitchChangeListener
-        findPreference("led_strip_state2").onPreferenceChangeListener = preferenceSwitchChangeListener
+        (findPreference("pc_socket_power") as SwitchPreference).setText("Socket Power")
+        (findPreference("pc_socket_power") as SwitchPreference).onClickListener = {
+
+        }
+
+        (findPreference("pc_power") as SwitchPreference).setText("PC Power")
+        (findPreference("pc_power") as SwitchPreference).onClickListener = {
+
+        }
+
+        (findPreference("led_strip_notification") as SwitchPreference).setText("Flash strips upon getting notifications")
+        (findPreference("led_strip_notification") as SwitchPreference).onClickListener = {
+            val state = (findPreference("led_strip_notification") as SwitchPreference).isChecked
+            settings.set("led_strip_notification", state)
+        }
+
+        (findPreference("led_strip_state1") as ClickableSwitchPreference).setText("LedStrip 1")
+        (findPreference("led_strip_state1") as ClickableSwitchPreference).onClickListener = {
+            val state = (findPreference("led_strip_state1") as ClickableSwitchPreference).isChecked
+            val newState = if (state) "on" else "off"
+            onClickCommand("led_strip_state1", "led_strip_state1_$newState")
+        }
+
+        (findPreference("led_strip_state2") as ClickableSwitchPreference).setText("LedStrip 2")
+        (findPreference("led_strip_state2") as ClickableSwitchPreference).onClickListener = {
+            val state = (findPreference("led_strip_state2") as ClickableSwitchPreference).isChecked
+            val newState = if (state) "on" else "off"
+            onClickCommand("led_strip_state2", "led_strip_state2_$newState")
+        }
     }
 
     private fun refreshSwitches() {
-        (findPreference(Settings.KEYS.SOCKET_POWER.id) as SwitchPreference).isChecked = settings.socketPower
-        (findPreference(Settings.KEYS.PC_POWER.id) as SwitchPreference).isChecked = settings.pc
-        (findPreference(Settings.KEYS.ENABLE_NOTIFICATION_LIGHTING.id) as SwitchPreference).isChecked = settings.enableNotificationLighting
-        (findPreference(Settings.KEYS.ENABLE_LED_STRIP_1.id) as SwitchPreference).isChecked = settings.enableLedStrip1
-        (findPreference(Settings.KEYS.ENABLE_LED_STRIP_2.id) as SwitchPreference).isChecked = settings.enableLedStrip2
-    }
-
-    private fun enableAll() {
-        (findPreference(Settings.KEYS.SOCKET_POWER.id) as SwitchPreference).isEnabled = true
-        (findPreference(Settings.KEYS.PC_POWER.id) as SwitchPreference).isEnabled = true
-        (findPreference(Settings.KEYS.ENABLE_NOTIFICATION_LIGHTING.id) as SwitchPreference).isEnabled = true
-        (findPreference(Settings.KEYS.ENABLE_LED_STRIP_1.id) as SwitchPreference).isEnabled = true
-        (findPreference(Settings.KEYS.ENABLE_LED_STRIP_2.id) as SwitchPreference).isEnabled = true
-    }
-
-    private val preferenceListChangeListener = OnPreferenceChangeListener { preference, newValue ->
-        settings.setString(preference.key, newValue as String)
-        true
-    }
-
-    private val preferenceSwitchChangeListener = OnPreferenceChangeListener { preference, _ ->
-        val state = (findPreference(preference.key) as SwitchPreference).isChecked
-        (findPreference(preference.key) as SwitchPreference).isChecked = !state
-//        (findPreference(preference.key) as SwitchPreference).isEnabled = false
-
-        val newState = if (state) "off" else "on"
-        onClickCommand(preference.key, "${preference.key}_$newState")
-        settings.set(preference.key, !state)
-        true
+        (findPreference(Settings.KEYS.ENABLE_NOTIFICATION_LIGHTING.id) as SwitchPreference).isChecked = (settings.enableNotificationLighting)
     }
 
     private val onPowerClickListener = DialogInterface.OnClickListener { dialog, which ->
@@ -111,9 +103,9 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
                 settings.setBoolean("pc_socket_power", true)
                 settings.setBoolean("pc_power", true)
                 (findPreference("pc_socket_power") as SwitchPreference).isEnabled = true
-                (findPreference("pc_socket_power") as SwitchPreference).isChecked = true
+                (findPreference("pc_socket_power") as SwitchPreference).isChecked = (true)
                 (findPreference("pc_power") as SwitchPreference).isEnabled = true
-                (findPreference("pc_power") as SwitchPreference).isChecked = true
+                (findPreference("pc_power") as SwitchPreference).isChecked = (true)
             }
 
             DialogInterface.BUTTON_POSITIVE -> {
@@ -141,7 +133,14 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
                             val name = setting.substring(0, separatorIndex)
                             val value = setting.substring(separatorIndex + 1, setting.length)
                             val typeAbbreviation = type.removeSuffix("_CONTROLLER").toLowerCase()
-                            settings.set(typeAbbreviation + "_$name", stringToBool(value))
+//                            (findPreference("${typeAbbreviation}_$name") as ClickableSwitchPreference)
+                            when {
+                                name.contains("state1") -> (findPreference("led_strip_state1") as SwitchPreference).isChecked = (stringToBool(value))
+                                name.contains("state2") -> (findPreference("led_strip_state2") as SwitchPreference).isChecked = (stringToBool(value))
+                                name.contains("socket_power") -> (findPreference("pc_socket_power") as SwitchPreference).isChecked = (stringToBool(value))
+                                name.contains("power") -> (findPreference("pc_power") as SwitchPreference).isChecked = (stringToBool(value))
+                                else -> settings.set(typeAbbreviation + "_$name", stringToBool(value))
+                            }
                         } catch (e: Exception) {
                             println("FAILED FOR $setting")
                             continue
@@ -153,7 +152,6 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
             }
         }
 
-        enableAll()
         refreshSwitches()
     }
 
@@ -164,9 +162,8 @@ class PreferenceFragment : android.preference.PreferenceFragment(), SharedPrefer
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-//        settings.set(key, sharedPreferences.getBoolean(key, false))
-////        println(key)
-//        (findPreference(key) as SwitchPreference).isChecked = settings.getBoolean(key)
+        settings.set(key, sharedPreferences.getBoolean(key, false))
+        (findPreference(key) as SwitchPreference).isChecked = (settings.getBoolean(key))
     }
 
     companion object {

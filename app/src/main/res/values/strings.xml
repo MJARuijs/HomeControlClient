@@ -37,5 +37,9 @@
     <string name="enable">Enable</string>
     <string name="delete">Delete</string>
     <string name="delete_button_background">Delete Button Background</string>
+    <string name="ledstrip_1">LedStrip 1</string>
+    <string name="title">title</string>
+    <string name="state_static">Static</string>
+    <string name="state_fading">Fading</string>
 
 </resources>

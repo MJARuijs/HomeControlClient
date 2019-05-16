@@ -1,11 +1,8 @@
-package mjaruijs.homecontrol.activities
+package mjaruijs.homecontrol.colorpicker
 
 import android.content.Context
 import android.view.LayoutInflater
 import mjaruijs.homecontrol.R
-import mjaruijs.homecontrol.colorpicker.ColorList
-import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
-import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
 
 class ColorPickerView(context: Context) {
 
@@ -20,12 +17,9 @@ class ColorPickerView(context: Context) {
 
         val layoutInflater = LayoutInflater.from(context)
         colorPickerPalette = layoutInflater.inflate(R.layout.custom_picker, null) as ColorPickerPalette
-        colorPickerPalette.init(colors.size, 5)
-        colorPickerPalette.mOnColorSelectedListener = object : ColorPickerSwatch.OnColorSelectedListener {
-            override fun onColorSelected(color: Int) {
-
-            }
-        }
+        colorPickerPalette.init(colors.size, 5, object : ColorPickerSwatch.OnColorSelectedListener {
+            override fun onColorSelected(color: Int) {}
+        })
         colorPickerPalette.drawPalette(colors, -1)
     }
 
@@ -33,6 +27,7 @@ class ColorPickerView(context: Context) {
 
     fun setOnClickListener(listener: ColorPickerSwatch.OnColorSelectedListener) {
         colorPickerPalette.mOnColorSelectedListener = listener
+        colorPickerPalette.drawPalette(colors, -1)
     }
 
 }

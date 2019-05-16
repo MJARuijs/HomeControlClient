@@ -7,6 +7,6 @@ import android.content.Intent
 class BootReceiverService : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         println("BOOT RECEIVED")
-//        AppCardData.getAppCards(context)
+//        AppCardInfo.getAppCards(context)
     }
 }

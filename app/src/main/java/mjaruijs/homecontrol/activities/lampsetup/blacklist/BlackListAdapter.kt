@@ -9,7 +9,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.blacklist_item.view.*
 import mjaruijs.homecontrol.R
 
-class BlackListAdapter(private val blackList: ArrayList<BlackListItem> = ArrayList()) : RecyclerView.Adapter<BlackListAdapter.BlackListItemViewHolder>() {
+class BlackListAdapter(val blackList: ArrayList<BlackListItem> = ArrayList()) : RecyclerView.Adapter<BlackListAdapter.BlackListItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlackListItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.blacklist_item, parent, false)
         return BlackListItemViewHolder(view)

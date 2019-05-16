@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.preference.Preference
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import mjaruijs.homecontrol.R
 
-class SeekbarPreference(context: Context) : Preference(context), SeekBar.OnSeekBarChangeListener {
+class SeekBarPreference(context: Context, attributes: AttributeSet) : Preference(context, attributes), SeekBar.OnSeekBarChangeListener {
 
     private lateinit var seekBar: SeekBar
 
@@ -19,7 +20,7 @@ class SeekbarPreference(context: Context) : Preference(context), SeekBar.OnSeekB
         seekBar = view.findViewById(R.id.brightnessSeekbar) as SeekBar
     }
 
-    override fun onCreateView(parent: ViewGroup?): View {
+    override fun onCreateView(parent: ViewGroup): View {
         super.onCreateView(parent)
         val layoutInflater = context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         return layoutInflater.inflate(R.layout.seek_bar_preference, parent, false)

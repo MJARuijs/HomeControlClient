@@ -20,6 +20,9 @@ open class EncodedClient(private val channel: SocketChannel) {
 
     fun write(bytes: ByteArray) {
         try {
+            if (!channel.isConnected) {
+                throw ClientException("NO CONNECTION")
+            }
             val encodedBytes = Base64.encode(bytes, NO_WRAP)
             val bufferSize = encodedBytes.size.toString().toByteArray()
             val encodedSize = Base64.encode(bufferSize, NO_WRAP)
@@ -27,6 +30,7 @@ open class EncodedClient(private val channel: SocketChannel) {
             buffer.put(encodedSize)
             buffer.put(encodedBytes)
             buffer.rewind()
+            println("${channel.isOpen}  ${channel.isRegistered}  ${channel.isConnected}   ${channel.isConnectionPending}   ${channel.isBlocking}   ${channel.socket().isConnected}   ${channel.socket().isClosed}  ${channel.socket().isBound}")
 //            println("WRITING ${String(encodedSize)}")
             channel.write(buffer)
         } catch (e: Exception) {

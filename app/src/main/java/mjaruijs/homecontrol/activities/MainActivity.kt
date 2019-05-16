@@ -16,6 +16,7 @@ import mjaruijs.homecontrol.colorpicker.ColorList
 import mjaruijs.homecontrol.colorpicker.ColorPickerPalette
 import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
 import mjaruijs.homecontrol.networking.NetworkManager
+import mjaruijs.homecontrol.services.ExceptionHandler
 import mjaruijs.homecontrol.settings.PreferenceFragment
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
                 .commitAllowingStateLoss()
 
         colorPicker = ColorPicker()
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler())
 
         Thread {
 //            InstalledAppsCache.get(this)

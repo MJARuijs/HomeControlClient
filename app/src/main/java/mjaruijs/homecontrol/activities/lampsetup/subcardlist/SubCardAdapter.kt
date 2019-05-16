@@ -9,8 +9,11 @@ import android.widget.Button
 import android.widget.TextView
 import kotlinx.android.synthetic.main.subcard_item.view.*
 import mjaruijs.homecontrol.R
+import mjaruijs.homecontrol.colorpicker.ColorPickerView
+import mjaruijs.homecontrol.activities.dialogs.DynamicAlertDialog
+import mjaruijs.homecontrol.colorpicker.ColorPickerSwatch
 
-class SubCardAdapter(private val subCards: ArrayList<SubCardItem> = ArrayList()) : RecyclerView.Adapter<SubCardAdapter.SubCardViewHolder>() {
+class SubCardAdapter(private val dynamicDialog: DynamicAlertDialog, private val colorPickerView: ColorPickerView, val subCards: ArrayList<SubCardItem> = ArrayList()) : RecyclerView.Adapter<SubCardAdapter.SubCardViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubCardViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.subcard_item, parent, false)
@@ -33,6 +36,23 @@ class SubCardAdapter(private val subCards: ArrayList<SubCardItem> = ArrayList())
             subCards.removeAt(position)
             notifyDataSetChanged()
         }
+
+        holder.notificationColor.setOnClickListener {
+            colorPickerView.setOnClickListener(object : ColorPickerSwatch.OnColorSelectedListener {
+                override fun onColorSelected(color: Int) {
+                    val state = arrayOf(intArrayOf(0))
+                    val colorArray = intArrayOf(color)
+                    val colorState = ColorStateList(state, colorArray)
+                    holder.notificationColor.backgroundTintList = colorState
+                    subCard.color = color
+                    println(color)
+                    dynamicDialog.dismiss()
+                }
+            })
+
+            dynamicDialog.applyConfig("color_picker")
+        }
+
     }
 
     operator fun plusAssign(subCard: SubCardItem) {
